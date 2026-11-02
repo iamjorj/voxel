@@ -1,0 +1,208 @@
+<UserControl x:Class="Voxel.Pages.VoicesPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Voxel.Pages"
+             xmlns:app="clr-namespace:Voxel">
+    <UserControl.Resources>
+        <!-- One voice row. Looks change with IsOn and hover. -->
+        <DataTemplate DataType="{x:Type local:VoiceItem}">
+            <!-- A real Button, so rows work with keyboard, screen readers and UI automation. -->
+            <Button Click="Row_Click" Cursor="Hand" Focusable="True" Margin="0,0,0,4"
+                    AutomationProperties.Name="{Binding Name}">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Row" CornerRadius="12" Padding="10" Background="Transparent">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Border x:Name="IconBg" Width="38" Height="38" CornerRadius="19" Background="{StaticResource CardHoverBrush}">
+                                    <Viewbox Width="20" Height="20">
+                                        <Path x:Name="Icon" Width="24" Height="24" Stretch="None" Data="{Binding Icon}"
+                                              Stroke="{StaticResource TextSecondaryBrush}" StrokeThickness="1.75"
+                                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
+                                    </Viewbox>
+                                </Border>
+
+                                <TextBlock Grid.Column="1" Text="{Binding Name}" Margin="14,0,0,0" VerticalAlignment="Center"
+                                           FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" />
+
+                                <app:LevelBars x:Name="State" Grid.Column="2" Visibility="Collapsed" VerticalAlignment="Center" Margin="0,0,8,0"
+                                               Level="{Binding Level}" />
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Row" Property="Background" Value="{StaticResource CardBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Row" Property="Background" Value="{StaticResource CardBrush}" />
+                            </Trigger>
+                            <DataTrigger Binding="{Binding IsOn}" Value="True">
+                                <Setter TargetName="Row" Property="Background" Value="{StaticResource AccentSoftBrush}" />
+                                <Setter TargetName="IconBg" Property="Background" Value="{StaticResource AccentBrush}" />
+                                <Setter TargetName="Icon" Property="Stroke" Value="White" />
+                                <Setter TargetName="State" Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </DataTemplate>
+
+        <!-- Sidebar category item: icon + label, tinted when selected -->
+        <DataTemplate DataType="{x:Type local:CategoryItem}">
+            <Button Click="Chip_Click" Cursor="Hand" Margin="0,0,0,2" AutomationProperties.Name="{Binding Name}"
+                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Row" CornerRadius="10" Padding="12,9" Background="Transparent">
+                            <StackPanel Orientation="Horizontal">
+                                <Viewbox Width="17" Height="17" VerticalAlignment="Center">
+                                    <Path x:Name="Icon" Width="24" Height="24" Stretch="None" Data="{Binding Icon}"
+                                          Stroke="{StaticResource TextMutedBrush}" StrokeThickness="1.75"
+                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
+                                </Viewbox>
+                                <TextBlock x:Name="Label" Text="{Binding Name}" Margin="11,0,0,0" VerticalAlignment="Center"
+                                           FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" />
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Row" Property="Background" Value="{StaticResource CardBrush}" />
+                                <Setter TargetName="Label" Property="Foreground" Value="{StaticResource TextBrush}" />
+                            </Trigger>
+                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                <Setter TargetName="Row" Property="Background" Value="{StaticResource AccentSoftBrush}" />
+                                <Setter TargetName="Label" Property="Foreground" Value="#C9C2FF" />
+                                <Setter TargetName="Icon" Property="Stroke" Value="{StaticResource AccentBrush}" />
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </DataTemplate>
+
+        <Style x:Key="Placeholder" TargetType="TextBlock" BasedOn="{StaticResource Body}">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="">
+                    <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ClearButton" TargetType="Button" BasedOn="{StaticResource WindowButton}">
+            <Setter Property="Width" Value="28" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="Visibility" Value="Visible" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="196" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar: categories -->
+        <Border Grid.Column="0" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,1,0" Padding="16,12,12,16">
+            <StackPanel>
+                <TextBlock Text="CATEGORIES" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource TextMutedBrush}"
+                           Margin="12,0,0,10" />
+                <ItemsControl x:Name="Chips" />
+            </StackPanel>
+        </Border>
+
+        <!-- Main: title, search, list -->
+        <Grid Grid.Column="1" Margin="28,8,32,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Style="{StaticResource Title}" Text="Voices" />
+
+            <!-- Hear myself: plays what other apps hear on your own speakers/headphones -->
+            <ToggleButton x:Name="HearMyself" Grid.Column="1" Cursor="Hand" VerticalAlignment="Center" Margin="0,6,0,0"
+                          Checked="HearMyself_Changed" Unchecked="HearMyself_Changed" AutomationProperties.Name="Hear myself">
+                <ToggleButton.Template>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="Bd" CornerRadius="10" Padding="12,7" Background="{StaticResource CardBrush}"
+                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                            <StackPanel Orientation="Horizontal">
+                                <Viewbox Width="16" Height="16" VerticalAlignment="Center">
+                                    <Path x:Name="Icon" Width="24" Height="24" Stretch="None" Data="{StaticResource Icon.headphones}"
+                                          Stroke="{StaticResource TextSecondaryBrush}" StrokeThickness="1.75"
+                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
+                                </Viewbox>
+                                <TextBlock x:Name="Label" Text="Hear myself" Margin="8,0,0,0" FontSize="13" FontWeight="SemiBold"
+                                           Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource CardHoverBrush}" />
+                                <Setter TargetName="Label" Property="Foreground" Value="{StaticResource TextBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource AccentSoftBrush}" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                <Setter TargetName="Icon" Property="Stroke" Value="{StaticResource AccentBrush}" />
+                                <Setter TargetName="Label" Property="Foreground" Value="#C9C2FF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </ToggleButton.Template>
+            </ToggleButton>
+        </Grid>
+        <TextBlock x:Name="StatusText" Grid.Row="1" Style="{StaticResource Body}" Margin="0,4,0,18" />
+
+        <Border Grid.Row="2" Style="{StaticResource SearchField}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Viewbox Width="18" Height="18" Margin="0,0,10,0">
+                    <Path Width="24" Height="24" Stretch="None" Data="{StaticResource Icon.search}" Stroke="{StaticResource TextMutedBrush}"
+                          StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
+                </Viewbox>
+                <TextBox x:Name="SearchBox" Grid.Column="1" Style="{StaticResource SearchInput}" TextChanged="Search_TextChanged" />
+                <TextBlock Grid.Column="1" Style="{StaticResource Placeholder}" Text="Search voices" VerticalAlignment="Center" />
+                <Button Grid.Column="2" Style="{StaticResource ClearButton}" Click="Clear_Click" ToolTip="Clear">
+                    <Viewbox Width="14" Height="14">
+                        <Path Width="24" Height="24" Stretch="None" Data="{StaticResource Icon.x}" Stroke="{StaticResource TextSecondaryBrush}"
+                              StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                    </Viewbox>
+                </Button>
+            </Grid>
+        </Border>
+
+        <ScrollViewer Grid.Row="3" Margin="0,14,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                      PanningMode="VerticalOnly" Focusable="False" app:SmoothScroll.IsEnabled="True">
+            <StackPanel>
+                <ItemsControl x:Name="VoiceList" />
+                <TextBlock x:Name="NoResults" Style="{StaticResource Body}" Text="No voice matches that." Margin="10,12,0,0" Visibility="Collapsed" />
+            </StackPanel>
+        </ScrollViewer>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="VoiceChanger.App/VoiceChanger.App.csproj" />
+  <Project Path="VoiceChanger.Core/VoiceChanger.Core.csproj" />
+  <Project Path="Voxel/Voxel.csproj" />
+</Solution>

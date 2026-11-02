@@ -1,0 +1,17 @@
+bin/
+obj/
+*.user
+.vs/
+
+# research/: only our own scripts are tracked. Cloned repos, the Python env, downloaded
+# checkpoints, exported models, audio clips and training runs stay local.
+research/*
+!research/*.py
+!research/meanvc/
+research/meanvc/*
+!research/meanvc/*.py
+!research/train/
+research/train/*
+!research/train/*.py
+!research/train/*.json
+!research/train/*.ipynb

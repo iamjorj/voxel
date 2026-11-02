@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <!-- The DSP runs on the live audio thread; an unoptimized Debug build is 5-10x too slow. -->
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio" Version="3.3.0" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.31.1" />
+  </ItemGroup>
+
+</Project>

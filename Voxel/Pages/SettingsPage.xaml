@@ -1,0 +1,42 @@
+<UserControl x:Class="Voxel.Pages.SettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="36,8,36,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <Button Style="{StaticResource WindowButton}" Content="&#xE72B;" Click="Back_Click" ToolTip="Back" AutomationProperties.Name="Back" Margin="-8,0,8,0" />
+            <TextBlock Style="{StaticResource Title}" Text="Settings" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <!-- Virtual microphone status -->
+        <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,24,0,0" Padding="18,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Margin="0,0,20,0">
+                    <TextBlock Text="Virtual microphone" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" />
+                    <TextBlock x:Name="CableStatus" Style="{StaticResource Caption}" Margin="0,4,0,0" />
+                </StackPanel>
+                <Button Grid.Column="1" Style="{StaticResource GhostButton}" Padding="16,8" Content="Run setup again"
+                        VerticalAlignment="Center" Click="Setup_Click" />
+            </Grid>
+        </Border>
+
+        <!-- The one thing Windows can't automate -->
+        <Border Grid.Row="2" Style="{StaticResource Card}" Margin="0,12,0,0" Padding="18,16">
+            <StackPanel>
+                <TextBlock Text="An app doesn't hear the voice?" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" />
+                <TextBlock Style="{StaticResource Caption}" Margin="0,4,0,0"
+                           Text="Most apps use the Windows default microphone, which Voxel switches for you. A few (some websites, some games) remember their own choice: in their microphone list pick “CABLE Output (VB-Audio Virtual Cable)” once, and they'll keep it." />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

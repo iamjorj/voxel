@@ -1,0 +1,25 @@
+<UserControl x:Class="Voxel.Pages.ReadyPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel VerticalAlignment="Center" Margin="40,0,40,44">
+        <Border Width="72" Height="72" CornerRadius="36" Background="{StaticResource SuccessSoftBrush}" HorizontalAlignment="Center">
+            <TextBlock Text="&#xE73E;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="30"
+                       Foreground="{StaticResource SuccessBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </Border>
+
+        <TextBlock Style="{StaticResource Title}" Text="You're all set" TextAlignment="Center" Margin="0,28,0,10" />
+        <TextBlock Style="{StaticResource Body}" TextAlignment="Center"
+                   Text="Click a voice to turn it on. Click it again to go back to normal." />
+
+        <Border Style="{StaticResource Card}" Margin="0,24,0,0" Padding="16,12" HorizontalAlignment="Center" MaxWidth="460">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE946;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16"
+                           Foreground="{StaticResource AccentBrush}" VerticalAlignment="Top" Margin="0,3,12,0" />
+                <TextBlock Style="{StaticResource Caption}" Width="390"
+                           Text="Most apps switch to the new voice by themselves. If one keeps using your old mic (some websites and games do), open its microphone list and pick “CABLE Output” once." />
+            </StackPanel>
+        </Border>
+
+        <Button Style="{StaticResource PrimaryButton}" Content="Choose a voice" HorizontalAlignment="Center" Margin="0,28,0,0" Click="Choose_Click" />
+    </StackPanel>
+</UserControl>

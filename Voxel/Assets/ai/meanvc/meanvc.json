@@ -1,0 +1,23 @@
+{
+  "engine": "meanvc",
+  "model": "120ms",
+  "sample_rate": 16000,
+  "asr_samples": 3280,
+  "asr_hop": 2560,
+  "asr_cache": 8,
+  "asr_offset_init": 8,
+  "asr_offset_step": 4,
+  "delay_ms": 360,
+  "chunk": 12,
+  "block": 4,
+  "cache_lens": [
+    36,
+    36,
+    24,
+    24
+  ],
+  "heads": 2,
+  "head_dim": 64,
+  "vocoder_overlap": 2,
+  "hop": 160
+}

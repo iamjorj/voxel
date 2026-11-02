@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\VoiceChanger.Core\VoiceChanger.Core.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>Voxel</AssemblyName>
+    <RootNamespace>Voxel</RootNamespace>
+    <ApplicationIcon>Assets\voxel.ico</ApplicationIcon>
+    <Version>0.1.0</Version>
+    <Product>Voxel</Product>
+    <Description>Free one-click voice changer for Windows</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\voxel.ico" />
+  </ItemGroup>
+
+  <!-- VB-CABLE driver pack, redistributed under VB-Audio's donationware terms (see SetupPage). -->
+  <ItemGroup>
+    <None Update="Assets\vbcable\**" CopyToOutputDirectory="PreserveNewest" />
+    <!-- AI voice models: MeanVC2 (Apache-2.0) and LLVC (MIT), exported to ONNX. -->
+    <None Update="Assets\ai\**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

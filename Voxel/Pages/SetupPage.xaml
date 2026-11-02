@@ -1,0 +1,35 @@
+<UserControl x:Class="Voxel.Pages.SetupPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel VerticalAlignment="Center" Margin="40,0,40,44">
+        <TextBlock Style="{StaticResource Title}" Text="One thing to install" />
+        <TextBlock Style="{StaticResource Body}" Margin="0,8,0,24"
+                   Text="A virtual microphone lets other apps hear your new voice. You only do this once." />
+
+        <Border Style="{StaticResource Card}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Border Width="40" Height="40" CornerRadius="20" Background="{StaticResource AccentSoftBrush}" VerticalAlignment="Center">
+                    <TextBlock x:Name="StatusIcon" Text="&#xE95F;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="18"
+                               Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+
+                <StackPanel Grid.Column="1" Margin="14,0,12,0" VerticalAlignment="Center">
+                    <TextBlock Text="Virtual microphone" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" />
+                    <TextBlock x:Name="StatusText" Style="{StaticResource Caption}" Text="Not installed" Margin="0,2,0,0" />
+                </StackPanel>
+
+                <Button x:Name="ActionButton" Grid.Column="2" Style="{StaticResource PrimaryButton}" Padding="18,9"
+                        Content="Install" VerticalAlignment="Center" Click="Action_Click" />
+            </Grid>
+        </Border>
+
+        <TextBlock Style="{StaticResource Caption}" Margin="0,14,0,0"
+                   Text="Windows will ask once to allow it. Powered by VB-CABLE from VB-Audio (www.vb-cable.com), donationware — all participations are welcome." />
+    </StackPanel>
+</UserControl>

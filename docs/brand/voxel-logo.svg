@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="512" height="512">
+  <!-- Voxel app icon: five sound bars forming a V. Violet #7C6CF6 on dark #0E1014. -->
+  <rect width="120" height="120" rx="28" fill="#0E1014"/>
+  <g stroke="#7C6CF6" stroke-width="9" stroke-linecap="round">
+    <line x1="30" y1="38" x2="30" y2="62"/>
+    <line x1="45" y1="30" x2="45" y2="82"/>
+    <line x1="60" y1="46" x2="60" y2="98"/>
+    <line x1="75" y1="30" x2="75" y2="82"/>
+    <line x1="90" y1="38" x2="90" y2="62"/>
+  </g>
+</svg>
