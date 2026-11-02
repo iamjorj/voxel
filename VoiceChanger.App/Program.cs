@@ -211,6 +211,22 @@ static class Program
                 if (load > 0.9) { Console.WriteLine("FAIL: AI voice can't keep up with real time"); failed = true; }
             }
         }
+        // Silence in, silence out: no voice may add a sound of its own (people in a call would hear it while you're quiet).
+        var noisy = new List<string>();
+        foreach (var v in VoiceCatalog.All.Where(v => v.AiModel == null))
+        {
+            var src = new VoiceChanger.Core.Dsp.SplitSource(format);
+            src.Push(new float[rate * 2]);
+            using var chain = new VoiceChanger.Core.Dsp.VoiceEffectChain(src);
+            chain.Apply(v);
+            var output = new float[rate * 2];
+            chain.Read(output, 0, output.Length);
+            var peak = output.Max(Math.Abs);
+            if (peak > 0.001f) noisy.Add($"{v.Name} ({peak:F3})");
+        }
+        Console.WriteLine(noisy.Count == 0 ? "  ok: every voice is silent when you are" : $"  FAIL: sound during silence: {string.Join(", ", noisy)}");
+        failed |= noisy.Count > 0;
+
         Console.WriteLine("Slowest voices (processing time / audio time):");
         foreach (var r in results.OrderByDescending(r => r.Ratio).Take(5))
             Console.WriteLine($"  {r.Name}: {r.Ratio:P1}");

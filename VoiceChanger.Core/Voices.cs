@@ -74,10 +74,6 @@ public sealed record Voice(string Name, VoiceCategory Category, string Icon)
     public float ReverbMix { get; init; }
     public float ReverbSize { get; init; } = 0.65f;
 
-    // Texture
-    public NoiseLayer.Kind Noise { get; init; }
-    public float NoiseLevel { get; init; }
-
     public float Gain { get; init; } = 1f;
 
     public static Voice Clown => VoiceCatalog.All.First(v => v.Name == "Clown");

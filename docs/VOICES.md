@@ -5,6 +5,8 @@ listener should hear; "Recipe" is the shorthand for how it's made.
 
 ## Engine upgrades needed first
 
+Background sounds (static, hiss, crackle, hum, wind, bubbles) were removed on 2026-11-02 at the user's request: every voice is the voice effect only.
+
 | Stage | Why |
 |---|---|
 | Formant shift (independent of pitch) | Believable girl/boy/woman/man voices instead of chipmunk/giant |
@@ -12,7 +14,6 @@ listener should hear; "Recipe" is the shorthand for how it's made.
 | Autotune (pitch detect → snap to scale) | Autotune, singer, robot-singer voices |
 | Bit-crusher / sample-rate reducer | Game console, dial-up, glitch, cheap devices |
 | Flanger (modulated delay with feedback) | Jet-engine swoosh, alien, poltergeist |
-| Noise layer (static, breath, crackle) | Radios, vinyl, cassette, whispers |
 | 3-band EQ | Every device voice, nasal/bass voices |
 | Pitch envelope (droop / rise, non-sine LFO) | Zombie droop, sleepy, drunk slides |
 | Gate / stutter | Stutter, glitch, walkie-talkie squelch |
@@ -29,7 +30,7 @@ The realistic Woman and Man are AI voices (MeanVC2, category AI); the old pitch-
 | Deep man | Movie-trailer baritone | pitch 0.8, formant −20%, bass EQ, light reverb |
 | Teen | Cracking, slightly nasal | pitch 1.1, formant +8%, mid EQ, random pitch flicks |
 | Kid | Small child | pitch 1.45, formant +30% |
-| Toddler | Tiny, breathy | pitch 1.6, formant +35%, breath noise |
+| Toddler | Tiny, breathy | pitch 1.6, formant +35% |
 | Big guy | Large, chesty | pitch 0.85, formant −15%, compressor |
 | Announcer | Stadium/boxing announcer | compressor, bright EQ, short reverb, slight pitch 0.95 |
 | Narrator | Close, warm documentary voice | compressor, low-mid EQ boost, tiny room |
@@ -41,7 +42,7 @@ The realistic Woman and Man are AI voices (MeanVC2, category AI); the old pitch-
 
 | Voice | Sound | Recipe |
 |---|---|---|
-| Werewolf | Growl with breathy edge | pitch 0.7, drive, formant −15%, breath noise, tremolo 8 Hz |
+| Werewolf | Growl with breathy edge | pitch 0.7, drive, formant −15%, tremolo 8 Hz |
 | Dragon | Huge, fiery, rumbling | pitch 0.5, drive, reverb, low rumble layer |
 | Orc | Guttural, rough | pitch 0.65, drive 0.6, formant −20%, mid EQ |
 | Troll | Dumb, slow, low | pitch 0.6, formant −25%, slow pitch droop |
@@ -50,10 +51,10 @@ The realistic Woman and Man are AI voices (MeanVC2, category AI); the old pitch-
 | Dwarf | Gruff, mid-low, tight | pitch 0.8, formant −20%, compressor, mid EQ |
 | Fairy | Light, sparkly, airy | pitch 1.5, formant +20%, shimmer reverb, chorus |
 | Siren | Hypnotic, detuned, wet | chorus wide, reverb long, pitch 1.2, slow vibrato |
-| Mummy | Dry, hollow, ancient | pitch 0.85, band-pass, breath noise, slow tremolo |
+| Mummy | Dry, hollow, ancient | pitch 0.85, band-pass, slow tremolo |
 | Skeleton | Rattly, thin, clicky | high-pass, ring 90 Hz light, bit-crush light, tremolo fast |
-| Swamp thing | Gurgly, muddy | pitch 0.7, low-pass 900, wobble, bubble noise |
-| Snake | Hissy, sibilant, sly | formant +5%, high EQ boost, breath noise, slight chorus |
+| Swamp thing | Gurgly, muddy | pitch 0.7, low-pass 900, wobble |
+| Snake | Hissy, sibilant, sly | formant +5%, high EQ boost, slight chorus |
 | Bear | Deep huff | pitch 0.6, formant −25%, low-pass 2.5k, drive light |
 | Kraken | Deep underwater monster | pitch 0.5, low-pass 700, reverb, wobble slow |
 | Golem | Stone grinding | pitch 0.6, ring 25 Hz, drive, bit-crush light |
@@ -70,7 +71,7 @@ The realistic Woman and Man are AI voices (MeanVC2, category AI); the old pitch-
 | Creepy whisper | Breathy, close, no tone | noise-vocoder, high-pass, close reverb |
 | Shadow | Hollow and distant | pitch 0.9, band-pass, long reverb, low volume tremolo |
 | Cursed | Reversed-feeling, metallic | ring 60 Hz, reverb pre-delay, pitch 0.85, flanger slow |
-| Séance | Old radio from beyond | band-pass narrow, static noise, reverb, tremolo slow |
+| Séance | Old radio from beyond | band-pass narrow, reverb, tremolo slow |
 | Nightmare | Slowed and stretched | pitch 0.75, wobble slow deep, reverb huge, low-pass |
 
 ## Machines (14)
@@ -83,7 +84,7 @@ The realistic Woman and Man are AI voices (MeanVC2, category AI); the old pitch-
 | Evil machine | Harsh, metallic dictator | ring 30 Hz, drive 0.7, band-pass, compressor |
 | Glitch | Stuttery, bit-broken | stutter gate random, bit-crush, pitch flicks |
 | Game console | 8-bit handheld | bit-crush 6-bit, sample-rate 8 kHz, band-pass |
-| Dial-up modem | Screechy data noise | ring 1.2 kHz, bit-crush, noise bursts, band-pass |
+| Dial-up modem | Screechy data noise | ring 1.2 kHz, bit-crush, band-pass |
 | Vocoder | Classic synth talk-box | vocoder saw full, chorus |
 | Synth voice | Smooth, musical | vocoder + autotune, reverb |
 | Mech | Giant walking robot | pitch 0.6, ring 40 Hz, drive, reverb metallic |
@@ -107,7 +108,7 @@ The realistic Woman and Man are AI voices (MeanVC2, category AI); the old pitch-
 | Bunker | Concrete, dead, close | low-pass, reverb short dark |
 | Parking garage | Concrete echoes | echo 250 ms, reverb, mid EQ |
 | Concert hall | Grand, lush | reverb long warm, slight chorus |
-| Mountain top | Wind, far echo | wind noise, echo 700 ms, high-pass |
+| Mountain top | Wind, far echo | echo 700 ms, high-pass |
 
 ## Devices (12)
 
@@ -116,8 +117,8 @@ The realistic Woman and Man are AI voices (MeanVC2, category AI); the old pitch-
 | Trash mic | Awful gamer headset | band-pass 400–3k, drive, bit-crush, static |
 | Drive-thru | Crackly speaker box | band-pass, drive, static, compressor |
 | Airport PA | Echoey announcement | band-pass, reverb long, echo, compressor |
-| Old vinyl | Warm, crackling record | low-pass, crackle noise, slow wobble, mono |
-| Cassette | Hissy tape with flutter | hiss noise, wobble fast light, low-pass 8k |
+| Old vinyl | Warm, crackling record | low-pass, slow wobble, mono |
+| Cassette | Hissy tape with flutter | wobble fast light, low-pass 8k |
 | Baby monitor | Thin, hissy, distant | band-pass, static, low volume, tremolo |
 | Intercom | Buzzy office speaker | band-pass, drive, hum |
 | CB radio | Trucker radio with squelch | band-pass, drive, static, gate squelch |

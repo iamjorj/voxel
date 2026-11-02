@@ -23,7 +23,6 @@ public sealed class VoiceEffectChain : ISampleProvider, IDisposable
     private readonly Compressor _comp;
     private readonly Echo _echo;
     private readonly Reverb _reverb;
-    private readonly NoiseLayer _noise;
     private readonly Gain _gain;
 
     public VoiceEffectChain(ISampleProvider monoSource)
@@ -44,8 +43,7 @@ public sealed class VoiceEffectChain : ISampleProvider, IDisposable
         _comp = new Compressor(_stutter);
         _echo = new Echo(_comp);
         _reverb = new Reverb(_echo);
-        _noise = new NoiseLayer(_reverb);
-        _gain = new Gain(_noise);
+        _gain = new Gain(_reverb);
     }
 
     public WaveFormat WaveFormat => _gain.WaveFormat;
@@ -78,7 +76,6 @@ public sealed class VoiceEffectChain : ISampleProvider, IDisposable
         _comp.Amount = v.Compress;
         _echo.DelayMs = v.EchoMs; _echo.Feedback = v.EchoFeedback; _echo.Mix = v.EchoMix;
         _reverb.Mix = v.ReverbMix; _reverb.Size = v.ReverbSize;
-        _noise.Type = v.Noise; _noise.Level = v.NoiseLevel;
         _gain.Amount = v.Gain;
     }
 }
