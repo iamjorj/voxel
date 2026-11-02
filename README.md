@@ -14,11 +14,11 @@
 
 ## Download
 
-Get **Voxel.exe** from the [latest release](https://github.com/iamjorj/voxel/releases/latest) and double-click it. Nothing else to install.
+Get **VoxelSetup.exe** from the [latest release](https://github.com/iamjorj/voxel/releases/latest) and run it. It installs for your user only (no admin needed) and adds Voxel to the Start menu. Nothing else to install, not even .NET. Uninstall from Windows Settings → Apps.
 
 The first-start setup installs **VB-CABLE**, a free virtual microphone by VB-Audio, with one click. Windows asks once to allow the driver. While a voice is on, Voxel makes the virtual mic the default; it puts your real mic back when you turn the voice off or close the app.
 
-Windows SmartScreen may warn about an unknown publisher because the exe isn't code-signed yet: choose **More info → Run anyway**.
+Windows SmartScreen may warn about an unknown publisher because the installer isn't code-signed yet: choose **More info → Run anyway**.
 
 **An app doesn't hear the voice?** Some apps pick their own microphone. In that app's settings, choose **CABLE Output** as the microphone.
 
@@ -42,10 +42,10 @@ Needs Windows and the .NET 10 SDK.
 dotnet build Voxel
 ```
 
-Release exe (self-contained single file):
+Installer (needs [Inno Setup 6](https://jrsoftware.org/isinfo.php): `winget install --id JRSoftware.InnoSetup -e`). Writes `artifacts/VoxelSetup-<version>.exe`:
 
 ```bash
-dotnet publish Voxel -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true -p:EnableCompressionInSingleFile=true
+powershell -ExecutionPolicy Bypass -File installer/build.ps1
 ```
 
 ## Credits

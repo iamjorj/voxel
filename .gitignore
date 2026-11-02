@@ -15,3 +15,4 @@ research/train/*
 !research/train/*.py
 !research/train/*.json
 !research/train/*.ipynb
+artifacts/
