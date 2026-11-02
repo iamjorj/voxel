@@ -20,6 +20,8 @@
 
   <ItemGroup>
     <Resource Include="Assets\voxel.ico" />
+    <!-- Install locations and uninstall, shared with VoxelSetup -->
+    <Compile Include="..\Voxel.Setup\Installation.cs" Link="Installation.cs" />
   </ItemGroup>
 
   <!-- VB-CABLE driver pack, redistributed under VB-Audio's donationware terms (see SetupPage). -->

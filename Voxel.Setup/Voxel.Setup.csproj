@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- VoxelSetup.exe: Voxel's own installer, in the app's look. installer/build.ps1 publishes it as a
+       single self-contained file and appends the app (a zip) to its end; see Payload.cs. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>VoxelSetup</AssemblyName>
+    <RootNamespace>Voxel.Setup</RootNamespace>
+    <ApplicationIcon>..\Voxel\Assets\voxel.ico</ApplicationIcon>
+    <Version>0.1.0</Version>
+    <Product>Voxel Setup</Product>
+    <Description>Installs Voxel, the free one-click voice changer</Description>
+  </PropertyGroup>
+
+  <!-- Same theme and logo as the app -->
+  <ItemGroup>
+    <Page Include="..\Voxel\Theme.xaml" Link="Theme.xaml" />
+    <Page Include="..\Voxel\LogoMark.xaml" Link="LogoMark.xaml" />
+    <Compile Include="..\Voxel\LogoMark.xaml.cs" Link="LogoMark.xaml.cs" />
+    <Resource Include="..\Voxel\Assets\voxel.ico" Link="Assets\voxel.ico" />
+  </ItemGroup>
+
+</Project>

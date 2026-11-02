@@ -2,4 +2,5 @@
   <Project Path="VoiceChanger.App/VoiceChanger.App.csproj" />
   <Project Path="VoiceChanger.Core/VoiceChanger.Core.csproj" />
   <Project Path="Voxel/Voxel.csproj" />
+  <Project Path="Voxel.Setup/Voxel.Setup.csproj" />
 </Solution>

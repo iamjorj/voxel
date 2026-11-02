@@ -10,6 +10,15 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        // Windows' Apps list runs `Voxel.exe --uninstall` (`--quiet` for no window).
+        if (e.Args.Contains("--uninstall"))
+        {
+            if (e.Args.Contains("--quiet")) { UninstallWindow.Run(); Shutdown(); }
+            else new UninstallWindow().Show();
+            return;
+        }
+
         VoiceChanger.Core.Dsp.AiVoiceStage.ModelDirectory = Path.Combine(AppContext.BaseDirectory, "Assets", "ai");
 
         var window = new MainWindow();

@@ -1,0 +1,80 @@
+<Window x:Class="Voxel.Setup.SetupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:app="clr-namespace:Voxel"
+        Title="Voxel Setup" Width="460" Height="560" Icon="Assets/voxel.ico"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None" ResizeMode="CanMinimize"
+        Background="{StaticResource BgBrush}"
+        FontFamily="{StaticResource AppFont}"
+        TextOptions.TextFormattingMode="Ideal" UseLayoutRounding="True">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="44" GlassFrameThickness="0" ResizeBorderThickness="0" CornerRadius="0" />
+    </WindowChrome.WindowChrome>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="44" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Title bar, same as the app -->
+        <Grid Grid.Row="0">
+            <StackPanel Orientation="Horizontal" Margin="18,0,0,0" VerticalAlignment="Center">
+                <app:LogoMark Width="14" Height="16" Foreground="{StaticResource AccentBrush}" Margin="0,0,8,0" />
+                <TextBlock Text="Voxel Setup" VerticalAlignment="Center"
+                           FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,6,8,0" VerticalAlignment="Top"
+                        WindowChrome.IsHitTestVisibleInChrome="True">
+                <Button Style="{StaticResource WindowButton}" Content="&#xE921;" Click="Minimize_Click" ToolTip="Minimize" AutomationProperties.Name="Minimize" />
+                <Button x:Name="CloseButton" Style="{StaticResource WindowButton}" Content="&#xE8BB;" Click="Close_Click" ToolTip="Close" AutomationProperties.Name="Close" />
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" Margin="44,0,44,44">
+            <Border Width="84" Height="84" CornerRadius="22" Background="{StaticResource AccentSoftBrush}" HorizontalAlignment="Center">
+                <app:LogoMark Width="36" Height="40" Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+
+            <TextBlock x:Name="Heading" Style="{StaticResource Title}" Text="Install Voxel" TextAlignment="Center" Margin="0,28,0,10" />
+            <TextBlock x:Name="Message" Style="{StaticResource Body}" TextAlignment="Center"
+                       Text="Pick a voice and every app hears it. Games, Discord, Telegram, calls." />
+
+            <!-- Before install -->
+            <StackPanel x:Name="ReadyPanel" Margin="0,32,0,0">
+                <Border Style="{StaticResource Card}" Padding="18,12">
+                    <Grid>
+                        <TextBlock Text="Desktop shortcut" FontSize="14" Foreground="{StaticResource TextBrush}" VerticalAlignment="Center" />
+                        <ToggleButton x:Name="DesktopToggle" Style="{StaticResource Switch}" IsChecked="True" HorizontalAlignment="Right"
+                                      AutomationProperties.Name="Desktop shortcut" />
+                    </Grid>
+                </Border>
+                <Button Style="{StaticResource PrimaryButton}" Content="Install" HorizontalAlignment="Center" Margin="0,28,0,0" Click="Install_Click" />
+                <TextBlock x:Name="Footnote" Style="{StaticResource Caption}" TextAlignment="Center" Margin="0,18,0,0" />
+            </StackPanel>
+
+            <!-- Installing -->
+            <StackPanel x:Name="ProgressPanel" Margin="0,40,0,0" Visibility="Collapsed">
+                <Grid Height="6">
+                    <Border CornerRadius="3" Background="{StaticResource CardHoverBrush}" />
+                    <Border x:Name="ProgressFill" CornerRadius="3" Background="{StaticResource AccentBrush}" HorizontalAlignment="Left" Width="0" />
+                </Grid>
+                <TextBlock x:Name="ProgressText" Style="{StaticResource Caption}" TextAlignment="Center" Margin="0,14,0,0" Text="Installing… 0%" />
+            </StackPanel>
+
+            <!-- Done -->
+            <StackPanel x:Name="DonePanel" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,32,0,0" Visibility="Collapsed">
+                <Button Style="{StaticResource PrimaryButton}" Content="Open Voxel" Click="Open_Click" />
+                <Button Style="{StaticResource GhostButton}" Content="Close" Margin="12,0,0,0" Click="Close_Click" />
+            </StackPanel>
+
+            <!-- Failed -->
+            <StackPanel x:Name="ErrorPanel" Margin="0,24,0,0" Visibility="Collapsed">
+                <TextBlock x:Name="ErrorText" Style="{StaticResource Body}" Foreground="{StaticResource DangerBrush}" TextAlignment="Center" />
+                <Button Style="{StaticResource PrimaryButton}" Content="Try again" HorizontalAlignment="Center" Margin="0,24,0,0" Click="Install_Click" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

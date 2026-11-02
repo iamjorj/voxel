@@ -31,6 +31,7 @@ real mic → Voxel (AI voice → effects) → VB-CABLE → every app's mic
 - `VoiceChanger.Core`: audio engine (NAudio, WASAPI), default-device switching, the voice catalog and the DSP effects (formant-preserving pitch shifter, vocoder, reverb and more).
 - `VoiceChanger.Core/Dsp/VoiceModels.cs`: AI voices with ONNX Runtime on the CPU. **MeanVC2** turns any speaker into the voice of a 1 KB speaker file (Woman, Man); **LLVC** runs the Studio voice.
 - `Voxel`: the WPF app.
+- `Voxel.Setup`: the installer (per-user install, Start-menu and desktop shortcuts, entry in Windows' Apps list; `Voxel.exe --uninstall` removes it).
 - `VoiceChanger.App`: test harness (`--dsptest`, `--selftest`, `--aifile`).
 - `research/`: scripts that export the AI models to ONNX (`meanvc/export_meanvc.py`, `llvc_export.py`) and train LLVC voices (`train/`).
 
@@ -42,7 +43,7 @@ Needs Windows and the .NET 10 SDK.
 dotnet build Voxel
 ```
 
-Installer (needs [Inno Setup 6](https://jrsoftware.org/isinfo.php): `winget install --id JRSoftware.InnoSetup -e`). Writes `artifacts/VoxelSetup-<version>.exe`:
+Installer (Voxel's own, in `Voxel.Setup`). Writes `artifacts/VoxelSetup-<version>.exe`:
 
 ```bash
 powershell -ExecutionPolicy Bypass -File installer/build.ps1
