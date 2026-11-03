@@ -21,7 +21,7 @@ Background sounds (static, hiss, crackle, hum, wind, bubbles) were removed on 20
 
 ## People (12)
 
-The realistic Woman and Man are AI voices (MeanVC2, category AI); the old pitch-shift versions were removed.
+The realistic Man, E-girl and Grandpa are AI voices (MeanVC2, category AI); the old pitch-shift Woman, Man and Grandpa were removed, and the AI Woman was replaced by E-girl.
 
 | Voice | Sound | Recipe |
 |---|---|---|

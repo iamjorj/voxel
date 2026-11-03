@@ -9,11 +9,11 @@ public static class VoiceCatalog
     public static readonly IReadOnlyList<Voice> All =
     [
         // ---------- AI (real-time voice conversion: a different person) ----------
-        // MeanVC2: one shared model, each voice a 1 KB speaker file (LibriSpeech readers 1919 and 777). ~25% of one core.
-        new("Woman", Cat.AI, "woman") { AiModel = "meanvc/woman" },
+        // MeanVC2: one shared model, each voice a 1 KB speaker file (LibriSpeech reader 777,
+        // GLOBE/Common Voice speakers S_005141 and S_005467). ~25% of one core.
         new("Man", Cat.AI, "man") { AiModel = "meanvc/man" },
-        // LLVC, 52 ms chunks: ~40% CPU even on a laptop on battery; the 26 ms variant (research/) is lighter on delay but ~70%.
-        new("Studio voice", Cat.AI, "atom") { AiModel = "llvc-demo-c4" },
+        new("E-girl", Cat.AI, "heart") { AiModel = "meanvc/egirl" },
+        new("Grandpa", Cat.AI, "eyeglass") { AiModel = "meanvc/grandpa" },
 
         // ---------- Fun ----------
         new("Clown", Cat.Fun, "mood-smile") { Pitch = 1.6f, WobbleHz = 5f, WobbleDepthMs = 1.2f },
@@ -45,7 +45,6 @@ public static class VoiceCatalog
         new("Toddler", Cat.People, "baby-bottle") { Pitch = 1.8f, Formant = 1.35f },
         new("Baby", Cat.People, "baby-carriage") { Pitch = 1.8f, HighPassHz = 200f },
         new("Big guy", Cat.People, "barbell") { Pitch = 0.8f, Formant = 0.88f, Compress = 0.4f },
-        new("Grandpa", Cat.People, "eyeglass") { Pitch = 0.9f, TremoloHz = 5.5f, TremoloDepth = 0.35f, LowPassHz = 4000f },
         new("Announcer", Cat.People, "microphone-2") { Pitch = 0.95f, Compress = 0.7f, EqHighDb = 5f, ReverbMix = 0.2f, ReverbSize = 0.5f },
         new("Narrator", Cat.People, "book") { Compress = 0.5f, EqLowDb = 4f, EqMidHz = 300f, EqMidDb = 3f, ReverbMix = 0.08f, ReverbSize = 0.3f },
         new("Radio DJ", Cat.People, "disc") { Compress = 0.8f, EqLowDb = 6f, EqHighDb = 4f, Formant = 0.92f },

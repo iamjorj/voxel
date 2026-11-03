@@ -13,7 +13,7 @@
     <AssemblyName>Voxel</AssemblyName>
     <RootNamespace>Voxel</RootNamespace>
     <ApplicationIcon>Assets\voxel.ico</ApplicationIcon>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Product>Voxel</Product>
     <Description>Free one-click voice changer for Windows</Description>
   </PropertyGroup>
@@ -27,7 +27,7 @@
   <!-- VB-CABLE driver pack, redistributed under VB-Audio's donationware terms (see SetupPage). -->
   <ItemGroup>
     <None Update="Assets\vbcable\**" CopyToOutputDirectory="PreserveNewest" />
-    <!-- AI voice models: MeanVC2 (Apache-2.0) and LLVC (MIT), exported to ONNX. -->
+    <!-- AI voice model: MeanVC2 (Apache-2.0), exported to ONNX. -->
     <None Update="Assets\ai\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

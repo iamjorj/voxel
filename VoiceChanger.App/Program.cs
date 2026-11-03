@@ -183,7 +183,7 @@ static class Program
         }
         // AI stage on its own, per model variant and thread count: where does the time go?
         // Three passes in a row: the first includes thread-pool and CPU-clock warm-up, the rest are steady state.
-        foreach (var model in new[] { "llvc-demo-c4", "meanvc/woman" })
+        foreach (var model in new[] { "llvc-demo-c4", "meanvc/man" })
         {
             if (!VoiceChanger.Core.Dsp.AiVoiceStage.IsAvailable(model)) continue;
             for (var pass = 1; pass <= 2; pass++)

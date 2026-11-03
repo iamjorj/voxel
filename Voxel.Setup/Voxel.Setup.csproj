@@ -11,7 +11,7 @@
     <AssemblyName>VoxelSetup</AssemblyName>
     <RootNamespace>Voxel.Setup</RootNamespace>
     <ApplicationIcon>..\Voxel\Assets\voxel.ico</ApplicationIcon>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Product>Voxel Setup</Product>
     <Description>Installs Voxel, the free one-click voice changer</Description>
   </PropertyGroup>

@@ -12,8 +12,8 @@ namespace VoiceChanger.Core.Dsp;
 /// the audio thread only moves samples in and out of two queues. With no model set the stage
 /// passes audio through untouched.
 ///
-/// Model names: "llvc-demo-c4" is a one-voice LLVC model (llvc-demo-c4.onnx + .json);
-/// "meanvc/woman" is the shared MeanVC model in the meanvc folder with the woman.spk voice.
+/// Model names: "llvc-demo-c4" is a one-voice LLVC model (llvc-demo-c4.onnx + .json, none ship today);
+/// "meanvc/man" is the shared MeanVC model in the meanvc folder with the man.spk voice.
 /// </summary>
 public sealed class AiVoiceStage : ISampleProvider, IDisposable
 {

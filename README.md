@@ -7,8 +7,8 @@
 ## Features
 
 - **One click.** Click a voice and it's on everywhere. Click it again to turn it off.
-- **126 voices** in 9 categories: AI, People, Creatures, Spooky, Machines, Places, Devices, Fun, Animals.
-- **Realistic AI voices** (Woman, Man, Studio voice) that run live on an ordinary CPU. No graphics card needed.
+- **125 voices** in 9 categories: AI, People, Creatures, Spooky, Machines, Places, Devices, Fun, Animals.
+- **Realistic AI voices** (Man, E-girl, Grandpa) that run live on an ordinary CPU. No graphics card needed.
 - **Hear myself** to check how you sound, and a live level meter.
 - **Free and open source** (MIT). No account, no ads, nothing to pay.
 
@@ -29,7 +29,7 @@ real mic → Voxel (AI voice → effects) → VB-CABLE → every app's mic
 ```
 
 - `VoiceChanger.Core`: audio engine (NAudio, WASAPI), default-device switching, the voice catalog and the DSP effects (formant-preserving pitch shifter, vocoder, reverb and more).
-- `VoiceChanger.Core/Dsp/VoiceModels.cs`: AI voices with ONNX Runtime on the CPU. **MeanVC2** turns any speaker into the voice of a 1 KB speaker file (Woman, Man); **LLVC** runs the Studio voice.
+- `VoiceChanger.Core/Dsp/VoiceModels.cs`: AI voices with ONNX Runtime on the CPU. **MeanVC2** turns any speaker into the voice of a 1 KB speaker file (Man, E-girl, Grandpa).
 - `Voxel`: the WPF app.
 - `Voxel.Setup`: the installer (per-user install, Start-menu and desktop shortcuts, entry in Windows' Apps list; `Voxel.exe --uninstall` removes it).
 - `VoiceChanger.App`: test harness (`--dsptest`, `--selftest`, `--aifile`).
@@ -51,7 +51,7 @@ powershell -ExecutionPolicy Bypass -File installer/build.ps1
 
 ## Credits
 
-VB-CABLE by VB-Audio ([www.vb-cable.com](https://www.vb-cable.com), donationware), MeanVC2 by ASLP-lab (Apache-2.0), LLVC by Koe AI (MIT), LibriSpeech (CC BY 4.0), ONNX Runtime, NAudio and Tabler Icons (MIT). Details in [docs/THIRD-PARTY.md](docs/THIRD-PARTY.md).
+VB-CABLE by VB-Audio ([www.vb-cable.com](https://www.vb-cable.com), donationware), MeanVC2 by ASLP-lab (Apache-2.0), LibriSpeech (CC BY 4.0), GLOBE / Mozilla Common Voice (CC0), ONNX Runtime, NAudio and Tabler Icons (MIT). Details in [docs/THIRD-PARTY.md](docs/THIRD-PARTY.md).
 
 ## License
 
