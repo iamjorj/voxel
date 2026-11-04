@@ -28,6 +28,7 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,6,8,0" VerticalAlignment="Top"
                         WindowChrome.IsHitTestVisibleInChrome="True">
+                <Button x:Name="UpdateButton" Style="{StaticResource PrimaryButton}" FontSize="12" Padding="12,0" Height="26" Margin="0,3,8,3" Click="Update_Click" Visibility="Collapsed" />
                 <Button x:Name="SettingsButton" Style="{StaticResource WindowButton}" Content="&#xE713;" Click="Settings_Click" ToolTip="Settings" AutomationProperties.Name="Settings" Visibility="Collapsed" />
                 <Button Style="{StaticResource WindowButton}" Content="&#xE921;" Click="Minimize_Click" ToolTip="Minimize" />
                 <Button Style="{StaticResource WindowButton}" Content="&#xE8BB;" Click="Close_Click" ToolTip="Close" />

@@ -10,6 +10,7 @@ namespace Voxel.Setup;
 public partial class SetupWindow : Window
 {
     private readonly string[] _args;
+    private readonly bool _update;
     private bool _busy;
 
     public SetupWindow(string[] args)
@@ -23,6 +24,15 @@ public partial class SetupWindow : Window
             Message.Text = $"Replaces the Voxel on this PC with version {App.Version}. Your voices and settings stay.";
         }
         Footnote.Text = $"Version {App.Version} · installs for you only, no admin needed";
+
+        // `--update`: the app's Update button started this, so no questions: keep the user's shortcut choice, install, reopen.
+        _update = args.Contains("--update") && Installation.IsInstalled;
+        if (_update)
+        {
+            DesktopToggle.IsChecked = Installation.HasDesktopShortcut;
+            ReadyPanel.Visibility = Visibility.Collapsed;
+            Loaded += (_, _) => Install_Click(this, new RoutedEventArgs());
+        }
     }
 
     private async void Install_Click(object sender, RoutedEventArgs e)
@@ -30,7 +40,7 @@ public partial class SetupWindow : Window
         var desktop = DesktopToggle.IsChecked == true;
         ReadyPanel.Visibility = ErrorPanel.Visibility = Visibility.Collapsed;
         ProgressPanel.Visibility = Visibility.Visible;
-        Heading.Text = "Installing Voxel";
+        Heading.Text = _update ? "Updating Voxel" : "Installing Voxel";
         Message.Text = "This takes a few seconds.";
         _busy = true;
 
@@ -46,6 +56,12 @@ public partial class SetupWindow : Window
                 using var payload = Payload.Open(_args) ?? throw new InvalidOperationException("This setup file is damaged. Please download it again.");
                 Installation.Install(payload, App.Version, desktop, progress);
             });
+            if (_update)
+            {
+                _busy = false;
+                Open_Click(this, e);
+                return;
+            }
             ProgressPanel.Visibility = Visibility.Collapsed;
             DonePanel.Visibility = Visibility.Visible;
             Heading.Text = "Voxel is ready";

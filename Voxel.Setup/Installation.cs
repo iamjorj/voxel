@@ -27,12 +27,13 @@ public static class Installation
     private const string UninstallKey = @"Software\Microsoft\Windows\CurrentVersion\Uninstall\Voxel";
 
     public static bool IsInstalled => File.Exists(ExePath);
+    public static bool HasDesktopShortcut => File.Exists(DesktopShortcut);
 
     /// <summary>Unpacks the app (a zip of the published folder), replacing any older version.</summary>
     public static void Install(Stream zip, string version, bool desktopShortcut, IProgress<double>? progress = null)
     {
         CloseRunningApp();
-        if (Directory.Exists(InstallDir)) Directory.Delete(InstallDir, recursive: true);
+        DeleteInstallDir();
         Directory.CreateDirectory(InstallDir);
 
         using var archive = new ZipArchive(zip, ZipArchiveMode.Read);
@@ -62,6 +63,16 @@ public static class Installation
         if (desktopShortcut) CreateShortcut(DesktopShortcut);
         else if (File.Exists(DesktopShortcut)) File.Delete(DesktopShortcut);
         Register(version, total / 1024);
+    }
+
+    // Windows can hold files for a moment after the app that used them has exited.
+    private static void DeleteInstallDir()
+    {
+        for (var attempt = 1; Directory.Exists(InstallDir); attempt++)
+        {
+            try { Directory.Delete(InstallDir, recursive: true); }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException && attempt < 10) { Thread.Sleep(500); }
+        }
     }
 
     /// <summary>

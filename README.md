@@ -20,6 +20,8 @@ The first-start setup installs **VB-CABLE**, a free virtual microphone by VB-Aud
 
 Windows SmartScreen may warn about an unknown publisher because the installer isn't code-signed yet: choose **More info → Run anyway**.
 
+**Updates:** when Voxel starts, it asks GitHub for the latest release and shows an **Update** button if there's a newer one. Nothing about you or your voice is sent, and nothing installs until you click it.
+
 **An app doesn't hear the voice?** Some apps pick their own microphone. In that app's settings, choose **CABLE Output** as the microphone.
 
 ## How it works
