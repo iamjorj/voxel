@@ -1,0 +1,60 @@
+# Does VB-CABLE's Mac build install on current macOS, and does sound written to it come back out?
+name: Mac VB-CABLE test
+
+on:
+  push:
+    branches: [mac-engine-test]
+    paths: [.github/workflows/mac-vbcable-test.yml]
+  workflow_dispatch:
+
+jobs:
+  vbcable:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+      - name: Download VB-CABLE
+        run: |
+          curl -fsSL -o vbcable.zip https://download.vb-audio.com/Download_MAC/VBCable_MACDriver_Pack108.zip
+          unzip -o vbcable.zip -d vbcable
+          find vbcable -maxdepth 3 | head -40
+          shasum -a 256 vbcable.zip
+      - name: Devices before
+        run: system_profiler SPAudioDataType
+      - name: Install
+        run: |
+          dmg=$(find vbcable -iname '*.dmg' | head -1)
+          if [ -n "$dmg" ]; then
+            hdiutil attach "$dmg" -nobrowse -mountpoint /tmp/vbcable-mount
+            ls -la /tmp/vbcable-mount
+            pkg=$(find /tmp/vbcable-mount -iname '*.pkg' | head -1)
+          else
+            pkg=$(find vbcable -iname '*.pkg' | head -1)
+          fi
+          echo "package: $pkg"
+          pkgutil --check-signature "$pkg" || true
+          spctl --assess --type install -vv "$pkg" || true
+          sudo installer -pkg "$pkg" -target /
+          ls -la /Library/Audio/Plug-Ins/HAL/ || true
+          codesign -dv --verbose=2 /Library/Audio/Plug-Ins/HAL/*.driver 2>&1 || true
+          sudo killall coreaudiod || true
+          sleep 5
+      - name: Devices after
+        run: system_profiler SPAudioDataType
+      - name: Send a tone through the cable and record it back
+        run: |
+          brew install sox
+          sox --version
+          sox -q -n -c 2 -r 48000 -t coreaudio "VB-Cable" synth 8 sine 440 vol 0.5 &
+          sleep 2
+          sox -q -c 2 -r 48000 -t coreaudio "VB-Cable" recorded.wav trim 0 3 || echo "recording failed"
+          wait || true
+          if [ -f recorded.wav ]; then
+            sox recorded.wav -n stat 2>&1
+            sox recorded.wav -n stat -freq 2>&1 | sort -k2 -n -r | head -3
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vbcable-recording
+          path: recorded.wav
+          if-no-files-found: ignore
