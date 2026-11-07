@@ -35,7 +35,28 @@ jobs:
           sleep 5
           system_profiler SPAudioDataType
       - name: Run the live test
-        run: dotnet run --project VoiceChanger.Mac.LiveTest -c Release -- "$GITHUB_WORKSPACE/results"
+        run: |
+          # A separate little program that only notices when it fails to wake up on time. If it
+          # freezes while Voxel does, the whole machine stopped, not Voxel.
+          mkdir -p results
+          cat > monitor.py <<'PY'
+          import time
+          last = time.monotonic()
+          while True:
+              time.sleep(0.01)
+              now = time.monotonic()
+              if now - last > 0.2:
+                  print(time.strftime("%H:%M:%S", time.gmtime()), "machine stalled for", int((now - last) * 1000), "ms", flush=True)
+              last = now
+          PY
+          python3 -u monitor.py > results/stalls.txt &
+          monitor=$!
+          code=0
+          dotnet run --project VoiceChanger.Mac.LiveTest -c Release -- "$GITHUB_WORKSPACE/results" || code=$?
+          kill $monitor || true
+          echo "--- stalls seen by the separate program:"
+          cat results/stalls.txt
+          exit $code
       - name: Show the results on the run page
         if: always()
         run: |

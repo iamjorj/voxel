@@ -7,6 +7,13 @@ using VoiceChanger.Core.Dsp;
 
 namespace VoiceChanger.Mac;
 
+public sealed record MacEngineDiagnostics(double WorstInputGapMs, double WorstOutputGapMs, double MicBacklogMs, int AiGaps, double AiMissingMs, double AiSlowestRunMs)
+{
+    public override string ToString() =>
+        $"worst gap between blocks: input {WorstInputGapMs:F0} ms, output {WorstOutputGapMs:F0} ms; mic backlog {MicBacklogMs:F0} ms; " +
+        $"AI so far: {AiGaps} gaps, {AiMissingMs:F0} ms missing, slowest run {AiSlowestRunMs:F0} ms";
+}
+
 /// <summary>
 /// Real mic -> voice effect -> output device, the Mac twin of the Windows AudioEngine.
 /// The output device is normally VB-Cable, so every other app hears the changed voice
@@ -15,14 +22,15 @@ namespace VoiceChanger.Mac;
 public sealed class MacAudioEngine : IDisposable
 {
     private const int Rate = 48000;
-    // Smaller = less delay, larger = safer against glitches. Same 20 ms as Windows.
-    private const int BlockFrames = Rate / 50;
+    // Smaller = less delay, larger = safer against glitches.
+    public static int BlockMs { get; set; } = 20;
+    private static int BlockFrames => Rate * BlockMs / 1000;
 
     private MacInputQueue? _capture;
     private MacOutputQueue? _output;
     private BufferedWaveProvider? _buffer;
     private VoiceEffectChain? _chain;
-    private byte[] _bytes = new byte[BlockFrames * sizeof(float)];
+    private byte[] _bytes = new byte[4096];
 
     // "Hear myself": a copy of the processed signal played on the speakers/headphones.
     private MonitorTap? _tap;
@@ -43,14 +51,13 @@ public sealed class MacAudioEngine : IDisposable
     public event Action<Exception>? Failed;
 
     /// <summary>What the audio path has been doing since the last call, for finding where a dropout came from.</summary>
-    public string TakeDiagnostics()
+    public MacEngineDiagnostics TakeDiagnostics()
     {
         var chain = _chain;
-        var text = $"worst gap between blocks: input {_worstInputGapMs:F0} ms, output {_worstOutputGapMs:F0} ms; " +
-                   $"mic backlog {_buffer?.BufferedDuration.TotalMilliseconds ?? 0:F0} ms; " +
-                   $"AI so far: {chain?.AiUnderruns ?? 0} gaps, {(chain?.AiMissingSamples ?? 0) * 1000.0 / Rate:F0} ms missing, slowest run {chain?.AiMaxRunMs ?? 0:F0} ms";
+        var result = new MacEngineDiagnostics(_worstInputGapMs, _worstOutputGapMs, _buffer?.BufferedDuration.TotalMilliseconds ?? 0,
+            chain?.AiUnderruns ?? 0, (chain?.AiMissingSamples ?? 0) * 1000.0 / Rate, chain?.AiMaxRunMs ?? 0);
         _worstInputGapMs = _worstOutputGapMs = 0;
-        return text;
+        return result;
     }
 
     private static void Note(Stopwatch clock, ref double worstMs)

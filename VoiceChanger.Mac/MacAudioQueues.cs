@@ -77,8 +77,10 @@ public sealed unsafe class MacOutputQueue : MacAudioQueue
 public abstract class MacAudioQueue(Action<Exception>? failed) : IDisposable
 {
     private const string AudioToolbox = "/System/Library/Frameworks/AudioToolbox.framework/AudioToolbox";
-    private const int QueuedBuffers = 3;
     private const uint FloatPacked = 1 | 8; // kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked
+
+    /// <summary>Blocks kept queued. More = safer against glitches, fewer = less delay.</summary>
+    public static int QueuedBuffers { get; set; } = 3;
 
     protected IntPtr Queue;
     protected volatile bool Running;

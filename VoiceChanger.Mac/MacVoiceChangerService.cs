@@ -18,7 +18,7 @@ public sealed class MacVoiceChangerService : IDisposable
     public float Level => _engine.IsRunning ? _engine.InputLevel : 0f;
 
     /// <summary>See <see cref="MacAudioEngine.TakeDiagnostics"/>.</summary>
-    public string TakeDiagnostics() => _engine.TakeDiagnostics();
+    public MacEngineDiagnostics TakeDiagnostics() => _engine.TakeDiagnostics();
 
     private bool _hearMyself;
 

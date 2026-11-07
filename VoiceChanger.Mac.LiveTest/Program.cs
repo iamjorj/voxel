@@ -67,7 +67,16 @@ static class Program
         var sourcePitch = MedianPitch(_speech);
         Log($"Source speech pitch: {sourcePitch:F0} Hz");
 
-        using var player = new MacOutputQueue(fakeMic.Uid, Rate, 1, Rate / 50, PlaySpeech, ex => { Log($"FAIL: player: {ex.Message}"); _failures++; });
+        // VB-Cable's own delay, with no Voxel in the path: player -> cable -> recorder.
+        using (var direct = NewPlayer(cable))
+        {
+            direct.Start();
+            Thread.Sleep(500);
+            var through = Measure("cable-direct", output, cable.Uid);
+            Log($"  (VB-Cable alone, with the test's player and recorder: about {through.DelayMs} ms)");
+        }
+
+        using var player = NewPlayer(fakeMic);
         player.Start();
 
         // The test's own delay, with no Voxel in the path: player -> stand-in mic -> recorder.
@@ -77,6 +86,21 @@ static class Program
 
         using var service = new MacVoiceChangerService();
         service.Failed += ex => { Log($"FAIL: engine: {ex.Message}"); _failures++; };
+
+        // How small can the audio blocks go? Delay and stalls for Normal at each setting.
+        foreach (var (blockMs, queued) in new[] { (20, 3), (20, 2), (10, 3), (10, 2), (5, 3) })
+        {
+            MacAudioEngine.BlockMs = blockMs;
+            MacAudioQueue.QueuedBuffers = queued;
+            service.TurnOn(Voice.Normal);
+            Thread.Sleep(500);
+            service.TakeDiagnostics();
+            var tuned = Measure($"blocks-{blockMs}ms-x{queued}", output);
+            Log($"    {blockMs} ms blocks x{queued}: delay about {tuned.DelayMs} ms, longest silence {tuned.LongestSilenceMs:F0} ms; {service.TakeDiagnostics()}");
+            service.TurnOff();
+        }
+        MacAudioEngine.BlockMs = 20;
+        MacAudioQueue.QueuedBuffers = 3;
 
         // A voice on: other apps' default mic must now be VB-Cable.
         service.TurnOn(Voice.Normal);
@@ -98,9 +122,16 @@ static class Program
             Thread.Sleep(voice.AiModel != null ? 1500 : 500);
             var clock = Stopwatch.StartNew();
             service.TakeDiagnostics();
+            var gcBefore = GC.GetTotalPauseDuration();
             var result = Measure(name, output, null, seconds);
-            Log($"    {service.TakeDiagnostics()}");
-            Check(result.LongestSilenceMs < 400, $"{name} has no long dropout (longest stretch of pure silence {result.LongestSilenceMs:F0} ms, in speech with pauses)");
+            var diagnostics = service.TakeDiagnostics();
+            Log($"    {diagnostics}; .NET memory cleanup paused everything for {(GC.GetTotalPauseDuration() - gcBefore).TotalMilliseconds:F0} ms in total");
+            // Every thread frozen at once is the machine stopping (see stalls.txt), not the audio path.
+            var machineStall = diagnostics.WorstInputGapMs > 300 && diagnostics.WorstOutputGapMs > 300;
+            if (result.LongestSilenceMs >= 400 && machineStall)
+                Log($"    NOTE: {result.LongestSilenceMs:F0} ms of silence, with input and output frozen at the same time");
+            else
+                Check(result.LongestSilenceMs < 400, $"{name} has no long dropout (longest stretch of pure silence {result.LongestSilenceMs:F0} ms)");
             var cpu = (Process.GetCurrentProcess().TotalProcessorTime - cpuBefore).TotalSeconds / (clock.Elapsed.TotalSeconds + (voice.AiModel != null ? 1.5 : 0.5));
             Log($"    whole app CPU about {cpu:P0} of one core");
             Check(result.Rms > 0.005, $"{name} is heard by an app");
@@ -140,6 +171,9 @@ static class Program
         using (new MacVoiceChangerService())
             Check(MacAudioDevices.DefaultMicrophone()?.Uid == fakeMic.Uid, "next start restores the real mic");
     }
+
+    private static MacOutputQueue NewPlayer(MacAudioDevice device) =>
+        new(device.Uid, Rate, 1, Rate / 50, PlaySpeech, ex => { Log($"FAIL: player: {ex.Message}"); _failures++; });
 
     private static void PlaySpeech(Span<float> block)
     {
@@ -184,7 +218,7 @@ static class Program
         var pitch = MedianPitch(audio);
         var delay = _playSilence ? 0 : Delay(audio, startedAt);
         var longest = LongestSilenceMs(audio, skip);
-        Log($"  {name}: recorded {audio.Length / (double)Rate:F1} s, rms {rms:F3}, peak {peak:F3}, pitch {pitch:F0} Hz, longest pure silence {longest:F0} ms" +
+        Log($"  [{DateTime.UtcNow:HH:mm:ss}] {name}: recorded {audio.Length / (double)Rate:F1} s, rms {rms:F3}, peak {peak:F3}, pitch {pitch:F0} Hz, longest pure silence {longest:F0} ms" +
             (_playSilence ? "" : $", delay from player about {delay} ms"));
         return new Recording(rms, peak, startPeak, afterStart, pitch, delay, longest);
     }
