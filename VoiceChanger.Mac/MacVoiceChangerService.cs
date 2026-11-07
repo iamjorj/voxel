@@ -17,6 +17,9 @@ public sealed class MacVoiceChangerService : IDisposable
     /// <summary>Live microphone level 0..1 while audio runs (0 otherwise), for meters.</summary>
     public float Level => _engine.IsRunning ? _engine.InputLevel : 0f;
 
+    /// <summary>See <see cref="MacAudioEngine.TakeDiagnostics"/>.</summary>
+    public string TakeDiagnostics() => _engine.TakeDiagnostics();
+
     private bool _hearMyself;
 
     /// <summary>

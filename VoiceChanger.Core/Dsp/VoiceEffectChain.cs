@@ -53,6 +53,10 @@ public sealed class VoiceEffectChain : ISampleProvider, IDisposable
 
     public void Dispose() => _ai.Dispose();
 
+    public int AiUnderruns => _ai.Underruns;
+    public int AiMissingSamples => _ai.MissingSamples;
+    public double AiMaxRunMs => _ai.MaxRunMs;
+
     public void Apply(Voice v)
     {
         _ai.SetModel(v.AiModel);

@@ -20,7 +20,7 @@ static class Program
     private const int Rate = 48000;
     private const int RecordSeconds = 8;
     private static readonly StringBuilder Report = new();
-    private static bool _failed;
+    private static int _failures;
 
     // The stand-in mic's player: loops the speech clip, or plays silence.
     private static float[] _speech = [];
@@ -40,11 +40,11 @@ static class Program
         catch (Exception ex)
         {
             Log($"FAIL: crashed: {ex}");
-            _failed = true;
+            _failures++;
         }
-        Log(_failed ? "LIVE TEST FAILED" : "LIVE TEST OK");
+        Log(_failures > 0 ? $"LIVE TEST FAILED ({_failures})" : "LIVE TEST OK");
         File.WriteAllText(Path.Combine(output, "results.txt"), Report.ToString());
-        return _failed ? 1 : 0;
+        return _failures > 0 ? 1 : 0;
     }
 
     private static void Run(string output)
@@ -67,11 +67,16 @@ static class Program
         var sourcePitch = MedianPitch(_speech);
         Log($"Source speech pitch: {sourcePitch:F0} Hz");
 
-        using var player = new MacOutputQueue(fakeMic.Uid, Rate, 1, Rate / 50, PlaySpeech, ex => { Log($"FAIL: player: {ex.Message}"); _failed = true; });
+        using var player = new MacOutputQueue(fakeMic.Uid, Rate, 1, Rate / 50, PlaySpeech, ex => { Log($"FAIL: player: {ex.Message}"); _failures++; });
         player.Start();
 
+        // The test's own delay, with no Voxel in the path: player -> stand-in mic -> recorder.
+        Thread.Sleep(500);
+        var baseline = Measure("baseline", output, fakeMic.Uid);
+        Log($"  (subtract about {baseline.DelayMs} ms from the delays below: that part is the test's own player and recorder)");
+
         using var service = new MacVoiceChangerService();
-        service.Failed += ex => { Log($"FAIL: engine: {ex.Message}"); _failed = true; };
+        service.Failed += ex => { Log($"FAIL: engine: {ex.Message}"); _failures++; };
 
         // A voice on: other apps' default mic must now be VB-Cable.
         service.TurnOn(Voice.Normal);
@@ -85,14 +90,17 @@ static class Program
         Check(service.Level > 0, "the level meter moves");
 
         // Switching voices while on, as a click does: instant, same session.
-        foreach (var name in new[] { "Chipmunk", "Man", "E-girl", "Grandpa" })
+        foreach (var (name, seconds) in new[] { ("Chipmunk", 8), ("Man", 8), ("E-girl", 8), ("Grandpa", 8), ("E-girl", 45), ("Man", 8) })
         {
             var voice = VoiceCatalog.All.First(v => v.Name == name);
             var cpuBefore = Process.GetCurrentProcess().TotalProcessorTime;
             service.TurnOn(voice);
             Thread.Sleep(voice.AiModel != null ? 1500 : 500);
             var clock = Stopwatch.StartNew();
-            var result = Measure(name, output);
+            service.TakeDiagnostics();
+            var result = Measure(name, output, null, seconds);
+            Log($"    {service.TakeDiagnostics()}");
+            Check(result.LongestSilenceMs < 400, $"{name} has no long dropout (longest stretch of pure silence {result.LongestSilenceMs:F0} ms, in speech with pauses)");
             var cpu = (Process.GetCurrentProcess().TotalProcessorTime - cpuBefore).TotalSeconds / (clock.Elapsed.TotalSeconds + (voice.AiModel != null ? 1.5 : 0.5));
             Log($"    whole app CPU about {cpu:P0} of one core");
             Check(result.Rms > 0.005, $"{name} is heard by an app");
@@ -104,14 +112,16 @@ static class Program
         _playSilence = true;
         Thread.Sleep(500);
         var silent = Measure("silence", output);
-        Check(silent.Peak < 0.01, $"silent when you are (peak {silent.Peak:F4})");
+        Log($"    leftover audio at the start of that recording: peak {silent.StartPeak:F3} in the first 300 ms");
+        Check(silent.PeakAfterStart < 0.01, $"silent when you are (peak after the first 300 ms: {silent.PeakAfterStart:F4})");
         _playSilence = false;
 
         // Hear myself, on then off, with a voice running.
+        var before = _failures;
         service.HearMyself = true;
         Thread.Sleep(1000);
         service.HearMyself = false;
-        Check(!_failed, "Hear myself turns on and off with a voice on");
+        Check(_failures == before, "Hear myself turns on and off with a voice on");
 
         service.TurnOff();
         Check(MacAudioDevices.DefaultMicrophone()?.Uid == fakeMic.Uid, "real mic is back after turning off");
@@ -139,31 +149,56 @@ static class Program
         Interlocked.Add(ref _played, block.Length);
     }
 
-    private readonly record struct Recording(double Rms, float Peak, float Pitch);
+    private readonly record struct Recording(double Rms, float Peak, float StartPeak, float PeakAfterStart, float Pitch, int DelayMs, double LongestSilenceMs);
 
     // Records whatever the system's default mic is right now: no device named, like another app.
-    private static Recording Measure(string name, string output)
+    private static Recording Measure(string name, string output, string? device = null, int seconds = RecordSeconds)
     {
-        var recorded = new List<float>(Rate * RecordSeconds);
-        var startedAt = Interlocked.Read(ref _played);
-        using (var recorder = new MacInputQueue(null, Rate, 1, Rate / 50, samples => { lock (recorded) recorded.AddRange(samples); },
-                   ex => { Log($"FAIL: recorder: {ex.Message}"); _failed = true; }))
+        var recorded = new List<float>(Rate * seconds);
+        long startedAt = 0;
+        using (var recorder = new MacInputQueue(device, Rate, 1, Rate / 50, samples =>
+                   {
+                       lock (recorded)
+                       {
+                           if (recorded.Count == 0) startedAt = Interlocked.Read(ref _played);
+                           recorded.AddRange(samples);
+                       }
+                   },
+                   ex => { Log($"FAIL: recorder: {ex.Message}"); _failures++; }))
         {
             recorder.Start();
-            Thread.Sleep(RecordSeconds * 1000);
+            Thread.Sleep(seconds * 1000);
         }
 
         float[] audio;
         lock (recorded) audio = recorded.ToArray();
-        using (var writer = new WaveFileWriter(Path.Combine(output, $"{name.ToLowerInvariant()}.wav"), new WaveFormat(Rate, 16, 1)))
+        var file = Path.Combine(output, $"{name.ToLowerInvariant()}{(seconds == RecordSeconds ? "" : $"-{seconds}s")}.wav");
+        using (var writer = new WaveFileWriter(file, new WaveFormat(Rate, 16, 1)))
             writer.WriteSamples(audio, 0, audio.Length);
 
         var rms = audio.Length == 0 ? 0 : Math.Sqrt(audio.Average(v => (double)v * v));
         var peak = audio.Length == 0 ? 0 : audio.Max(Math.Abs);
+        var skip = Math.Min(audio.Length, Rate * 3 / 10);
+        var startPeak = skip == 0 ? 0 : audio.Take(skip).Max(Math.Abs);
+        var afterStart = audio.Length <= skip ? 0 : audio.Skip(skip).Max(Math.Abs);
         var pitch = MedianPitch(audio);
-        var delay = _playSilence ? "" : $", delay from player about {Delay(audio, startedAt)} ms";
-        Log($"  {name}: recorded {audio.Length / (double)Rate:F1} s, rms {rms:F3}, peak {peak:F3}, pitch {pitch:F0} Hz{delay}");
-        return new Recording(rms, peak, pitch);
+        var delay = _playSilence ? 0 : Delay(audio, startedAt);
+        var longest = LongestSilenceMs(audio, skip);
+        Log($"  {name}: recorded {audio.Length / (double)Rate:F1} s, rms {rms:F3}, peak {peak:F3}, pitch {pitch:F0} Hz, longest pure silence {longest:F0} ms" +
+            (_playSilence ? "" : $", delay from player about {delay} ms"));
+        return new Recording(rms, peak, startPeak, afterStart, pitch, delay, longest);
+    }
+
+    private static double LongestSilenceMs(float[] audio, int from)
+    {
+        var longest = 0;
+        var run = 0;
+        for (var i = from; i < audio.Length; i++)
+        {
+            run = Math.Abs(audio[i]) < 1e-6f ? run + 1 : 0;
+            longest = Math.Max(longest, run);
+        }
+        return longest * 1000.0 / Rate;
     }
 
     // The shift (10 ms steps) that best lines up the recording's loudness with the looped source's.
@@ -232,6 +267,6 @@ static class Program
     private static void Check(bool ok, string what)
     {
         Log($"  {(ok ? "ok" : "FAIL")}: {what}");
-        _failed |= !ok;
+        if (!ok) _failures++;
     }
 }

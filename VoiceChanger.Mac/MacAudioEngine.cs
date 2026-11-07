@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
@@ -29,6 +30,9 @@ public sealed class MacAudioEngine : IDisposable
     private MacAudioDevice? _outputDevice;
     private float _inputLevel;
 
+    private readonly Stopwatch _inputClock = new(), _outputClock = new();
+    private double _worstInputGapMs, _worstOutputGapMs;
+
     public bool IsMonitoring => _monitorOut != null;
     public bool IsRunning => _capture != null;
 
@@ -37,6 +41,23 @@ public sealed class MacAudioEngine : IDisposable
 
     /// <summary>Raised on the audio thread if capture or playback stops because of an error.</summary>
     public event Action<Exception>? Failed;
+
+    /// <summary>What the audio path has been doing since the last call, for finding where a dropout came from.</summary>
+    public string TakeDiagnostics()
+    {
+        var chain = _chain;
+        var text = $"worst gap between blocks: input {_worstInputGapMs:F0} ms, output {_worstOutputGapMs:F0} ms; " +
+                   $"mic backlog {_buffer?.BufferedDuration.TotalMilliseconds ?? 0:F0} ms; " +
+                   $"AI so far: {chain?.AiUnderruns ?? 0} gaps, {(chain?.AiMissingSamples ?? 0) * 1000.0 / Rate:F0} ms missing, slowest run {chain?.AiMaxRunMs ?? 0:F0} ms";
+        _worstInputGapMs = _worstOutputGapMs = 0;
+        return text;
+    }
+
+    private static void Note(Stopwatch clock, ref double worstMs)
+    {
+        if (clock.IsRunning) worstMs = Math.Max(worstMs, clock.Elapsed.TotalMilliseconds);
+        clock.Restart();
+    }
 
     public void Start(Voice voice, MacAudioDevice microphone, MacAudioDevice outputDevice)
     {
@@ -53,7 +74,11 @@ public sealed class MacAudioEngine : IDisposable
         _tap = tap;
         _outputDevice = outputDevice;
 
-        _output = new MacOutputQueue(outputDevice.Uid, Rate, 2, BlockFrames, block => tap.Read(block), Fail);
+        _output = new MacOutputQueue(outputDevice.Uid, Rate, 2, BlockFrames, block =>
+        {
+            Note(_outputClock, ref _worstOutputGapMs);
+            tap.Read(block);
+        }, Fail);
         _capture = new MacInputQueue(microphone.Uid, Rate, 1, BlockFrames, OnData, Fail);
         _output.Start();
         _capture.Start();
@@ -88,6 +113,7 @@ public sealed class MacAudioEngine : IDisposable
 
     private void OnData(ReadOnlySpan<float> samples)
     {
+        Note(_inputClock, ref _worstInputGapMs);
         var buffer = _buffer;
         if (buffer == null) return;
 
