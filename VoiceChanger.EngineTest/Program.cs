@@ -36,6 +36,7 @@ static class Program
             EffectVoices();
             foreach (var voice in VoiceCatalog.All.Where(v => v.AiModel != null))
                 AiVoice(voice, output);
+            AiCatchUp();
         }
         catch (Exception ex)
         {
@@ -183,11 +184,45 @@ static class Program
             $"{ai.Underruns} gaps ({ai.MissingSamples * 1000.0 / Rate:F0} ms missing of {speech.Length * 1000 / Rate} ms), " +
             $"delay ~{Delay(speech, result)} ms, pitch {MedianPitch(result):F0} Hz");
         Check(busy < 0.9, $"{voice.Name} keeps up with real time");
+        Check(ai.MissingSamples < speech.Length * 0.04, $"{voice.Name} is missing under 4% of the audio");
         Check(result.All(float.IsFinite) && rms > 0.005, $"{voice.Name} produced real audio");
     }
 
+    // After the AI falls behind, the delay must come back down instead of staying longer for good.
+    // Reading 400 ms ahead of real time empties the output queue, like a stall on a busy machine.
+    private static void AiCatchUp()
+    {
+        const int block = 960, burstAt = 3 * Rate, burstBlocks = 20;
+        var speech = ReadSpeech();
+        var src = new SplitSource(WaveFormat.CreateIeeeFloatWaveFormat(Rate, 1));
+        src.Push(speech);
+        using var ai = new AiVoiceStage(src);
+        ai.SetModel("meanvc/man");
+
+        var result = new float[speech.Length];
+        var pace = Stopwatch.StartNew();
+        var ahead = 0;
+        for (var done = 0; done + block <= speech.Length; done += block)
+        {
+            ai.Read(result, done, block);
+            if (done >= burstAt && ahead < burstBlocks) { ahead++; continue; }
+            var wait = TimeSpan.FromSeconds((double)(done + block - ahead * block) / Rate) - pace.Elapsed;
+            if (wait > TimeSpan.Zero) Thread.Sleep(wait);
+        }
+
+        var before = Delay(speech, result, 0, burstAt / 480);
+        var after = Delay(speech, result, burstAt / 480 + 200, 12 * Rate / 480);
+        Log($"AI falling behind on purpose: {ai.Underruns} gaps, {ai.MissingSamples * 1000.0 / Rate:F0} ms missing; delay {before} ms before, {after} ms after");
+        // An overloaded machine keeps a longer queue until it calms down, so it can't judge this.
+        var busy = ai.AverageRunMs / ai.ChunkMs;
+        if (busy > 0.8) Log($"  note: machine too busy ({busy:P0} of one core) to judge how far the delay came back");
+        else Check(after - before <= 100, "the delay comes back down after falling behind");
+        // The 400 ms on purpose plus normal warm-up gaps; catching up must not cause a spiral of new gaps.
+        Check(ai.MissingSamples * 1000.0 / Rate < 900, "catching up doesn't cause more gaps");
+    }
+
     // The shift that best lines up the loudness of input and output, in 10 ms steps.
-    private static int Delay(float[] input, float[] result)
+    private static int Delay(float[] input, float[] result, int fromFrame = 0, int toFrame = int.MaxValue)
     {
         static double[] Envelope(float[] x)
         {
@@ -204,10 +239,10 @@ static class Program
         var b = Envelope(result);
         var best = 0;
         var bestScore = double.MinValue;
-        for (var lag = 0; lag < 100; lag++)
+        for (var lag = 0; lag < 130; lag++)
         {
             double score = 0;
-            for (var i = 0; i + lag < b.Length; i++) score += a[i] * b[i + lag];
+            for (var i = fromFrame; i < toFrame && i + lag < b.Length; i++) score += a[i] * b[i + lag];
             if (score > bestScore) { bestScore = score; best = lag; }
         }
         return best * 10;

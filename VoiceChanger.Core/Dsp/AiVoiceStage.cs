@@ -44,6 +44,8 @@ public sealed class AiVoiceStage : ISampleProvider, IDisposable
     // Diagnostics
     private readonly System.Diagnostics.Stopwatch _runClock = new();
     private int _runs, _underruns, _missing;
+    private int _owed; // output samples played as silence and not yet made up for
+    private int _watched, _lowestQueue = int.MaxValue; // how long, and how full, the output queue has been since the last gap
     private double _maxRunMs;
 
     public AiVoiceStage(ISampleProvider monoSource) => _source = monoSource;
@@ -129,6 +131,9 @@ public sealed class AiVoiceStage : ISampleProvider, IDisposable
             // steady delay and only runs dry if a run takes longer than planned.
             _outFifo.AddRange(new float[(int)((long)_model.DelayLen * WaveFormat.SampleRate / _model.SampleRate)]);
             _runClock.Reset(); _runs = 0; _underruns = 0; _missing = 0; _maxRunMs = 0;
+            _owed = 0;
+            _watched = 0;
+            _lowestQueue = int.MaxValue;
         }
         StartWorker();
     }
@@ -147,12 +152,48 @@ public sealed class AiVoiceStage : ISampleProvider, IDisposable
             if (_inFifo.Count >= _chunk.Length) _work.Set();
 
             var available = Math.Min(n, _outFifo.Count);
-            if (available < n) { _underruns++; _missing += n - available; }
+            if (available < n) { _underruns++; _missing += n - available; _owed += n - available; }
             for (var i = 0; i < available; i++) buffer[i] = _outFifo[i];
             _outFifo.RemoveRange(0, available);
             for (var i = available; i < n; i++) buffer[i] = 0; // underrun
+            if (available < n)
+            {
+                _watched = 0;
+                _lowestQueue = int.MaxValue;
+            }
+            else if (_owed > 0)
+            {
+                CatchUp(n);
+            }
             return n;
         }
+    }
+
+    // Silence played during an underrun pushes everything after it later, for good. Once the model
+    // has caught up, skip that much audio to get back to the planned delay. A real skip of speech,
+    // but better than talking over people for the rest of the session.
+    // The queue rises and falls in bursts as chunks arrive, so only its low point over half a second
+    // says how much is truly spare; skipping at a peak would cause the next underrun.
+    private void CatchUp(int read)
+    {
+        _lowestQueue = Math.Min(_lowestQueue, _outFifo.Count);
+        _watched += read;
+        if (_watched < WaveFormat.SampleRate / 2) return;
+
+        var keep = WaveFormat.SampleRate * 3 / 50; // 60 ms: compared with 40 ms, fewer gaps on a busy laptop
+        var skip = Math.Min(_owed, _lowestQueue - keep);
+        _watched = 0;
+        _lowestQueue = int.MaxValue;
+        if (skip <= 0) return;
+
+        var fade = WaveFormat.SampleRate / 200; // 5 ms, so the jump doesn't click
+        for (var i = 0; i < fade && skip + i < _outFifo.Count; i++)
+        {
+            var mix = (i + 1f) / (fade + 1);
+            _outFifo[skip + i] = _outFifo[i] * (1 - mix) + _outFifo[skip + i] * mix;
+        }
+        _outFifo.RemoveRange(0, skip);
+        _owed -= skip;
     }
 
     private void StartWorker()

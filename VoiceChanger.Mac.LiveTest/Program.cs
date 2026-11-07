@@ -134,6 +134,8 @@ static class Program
                 Check(result.LongestSilenceMs < 400, $"{name} has no long dropout (longest stretch of pure silence {result.LongestSilenceMs:F0} ms)");
             var cpu = (Process.GetCurrentProcess().TotalProcessorTime - cpuBefore).TotalSeconds / (clock.Elapsed.TotalSeconds + (voice.AiModel != null ? 1.5 : 0.5));
             Log($"    whole app CPU about {cpu:P0} of one core");
+            // Roughly 800 ms is the plan for AI voices here; gaps and machine stalls must not add to it.
+            if (voice.AiModel != null) Check(result.DelayMs < 950, $"{name} stays near the planned delay ({result.DelayMs} ms)");
             Check(result.Rms > 0.005, $"{name} is heard by an app");
             if (name == "Chipmunk") Check(Math.Abs(result.Pitch - sourcePitch * voice.Pitch) / (sourcePitch * voice.Pitch) < 0.15, $"Chipmunk raises the pitch ({result.Pitch:F0} Hz)");
         }
