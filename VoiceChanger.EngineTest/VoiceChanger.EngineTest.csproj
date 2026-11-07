@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The audio engine with no Windows parts, runnable on any OS: proves effects and AI voices work
+       on a Mac before any Mac app exists. Links the engine's sources; VoiceChanger.Core itself stays
+       Windows-only because of WASAPI and the default-mic switching. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio.Core" Version="3.3.0" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.31.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\VoiceChanger.Core\Dsp\*.cs" Link="Engine\Dsp\%(Filename)%(Extension)" />
+    <Compile Include="..\VoiceChanger.Core\Voices.cs" Link="Engine\Voices.cs" />
+    <Compile Include="..\VoiceChanger.Core\VoiceCatalog.cs" Link="Engine\VoiceCatalog.cs" />
+    <None Include="..\Voxel\Assets\ai\meanvc\**" Link="Assets\ai\meanvc\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <!-- 12 s of a CC0 speaker from GLOBE V2 (docs/THIRD-PARTY.md). -->
+    <None Update="speech.wav" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
