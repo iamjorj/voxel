@@ -1,0 +1,49 @@
+# Runs Voxel's Mac audio path on real Core Audio devices: VB-CABLE as shipped, BlackHole as a stand-in
+# microphone (GitHub's Macs have none; BlackHole is used by this test only and is never shipped).
+name: Mac live audio test
+
+on:
+  push:
+    branches: [mac-engine-test]
+    paths:
+      - VoiceChanger.Mac/**
+      - VoiceChanger.Mac.LiveTest/**
+      - VoiceChanger.Core/Dsp/**
+      - .github/workflows/mac-live-test.yml
+  workflow_dispatch:
+
+jobs:
+  live:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Install VB-CABLE
+        run: |
+          curl -fsSL -o vbcable.zip https://download.vb-audio.com/Download_MAC/VBCable_MACDriver_Pack108.zip
+          unzip -o vbcable.zip -d vbcable
+          hdiutil attach "$(find vbcable -iname '*.dmg' | head -1)" -nobrowse -mountpoint /tmp/vbcable-mount
+          sudo installer -pkg "$(find /tmp/vbcable-mount -iname '*.pkg' | head -1)" -target /
+      - name: Install BlackHole (stand-in mic)
+        run: brew install --cask blackhole-2ch
+      - name: Restart Core Audio
+        run: |
+          sudo killall coreaudiod || true
+          sleep 5
+          system_profiler SPAudioDataType
+      - name: Run the live test
+        run: dotnet run --project VoiceChanger.Mac.LiveTest -c Release -- "$GITHUB_WORKSPACE/results"
+      - name: Show the results on the run page
+        if: always()
+        run: |
+          if [ -f results/results.txt ]; then
+            { echo '```'; cat results/results.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mac-live-results
+          path: results/

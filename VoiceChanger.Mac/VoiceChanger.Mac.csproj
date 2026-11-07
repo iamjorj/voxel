@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The Mac side of the engine: Core Audio devices, default-mic switching and the audio loop.
+       Same effects and AI code as Windows (linked from VoiceChanger.Core, which stays Windows-only
+       because of WASAPI). Builds on any OS; the native calls only run on a Mac. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- The DSP runs on the live audio thread; an unoptimized Debug build is 5-10x too slow. -->
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio.Core" Version="3.3.0" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.31.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\VoiceChanger.Core\Dsp\*.cs" Link="Engine\Dsp\%(Filename)%(Extension)" />
+    <Compile Include="..\VoiceChanger.Core\Voices.cs" Link="Engine\Voices.cs" />
+    <Compile Include="..\VoiceChanger.Core\VoiceCatalog.cs" Link="Engine\VoiceCatalog.cs" />
+  </ItemGroup>
+
+</Project>
