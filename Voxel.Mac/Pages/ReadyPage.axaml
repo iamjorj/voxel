@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Voxel.Mac.Pages.ReadyPage">
+    <StackPanel VerticalAlignment="Center" Margin="40,0,40,44">
+        <Border Width="72" Height="72" CornerRadius="36" Background="{StaticResource SuccessSoftBrush}" HorizontalAlignment="Center">
+            <Viewbox Width="32" Height="32">
+                <Path Name="CheckIcon" Classes="icon" Stroke="{StaticResource SuccessBrush}" StrokeThickness="2" />
+            </Viewbox>
+        </Border>
+
+        <TextBlock Classes="title" Text="You're all set" TextAlignment="Center" Margin="0,28,0,10" />
+        <TextBlock Classes="body" TextAlignment="Center"
+                   Text="Click a voice to turn it on. Click it again to go back to normal. The first time, your Mac asks to let Voxel use the microphone: click Allow." />
+
+        <Border Classes="card" Margin="0,24,0,0" Padding="16,12" HorizontalAlignment="Center" MaxWidth="460">
+            <StackPanel Orientation="Horizontal">
+                <Viewbox Width="18" Height="18" VerticalAlignment="Top" Margin="0,1,12,0">
+                    <Path Name="InfoIcon" Classes="icon" Stroke="{StaticResource AccentBrush}" />
+                </Viewbox>
+                <TextBlock Classes="caption" Width="390"
+                           Text="Most apps switch to the new voice by themselves. If one keeps using your old mic (some websites and games do), open its microphone list and pick “VB-Cable” once." />
+            </StackPanel>
+        </Border>
+
+        <Button Classes="primary" Content="Choose a voice" HorizontalAlignment="Center" Margin="0,28,0,0" Click="Choose_Click" />
+    </StackPanel>
+</UserControl>

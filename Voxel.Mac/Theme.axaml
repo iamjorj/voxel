@@ -1,0 +1,203 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- The Windows app's Theme.xaml, in Avalonia's style syntax. Same colours and shapes. -->
+
+    <Styles.Resources>
+        <ResourceDictionary>
+            <SolidColorBrush x:Key="BgBrush" Color="#0E1014" />
+            <SolidColorBrush x:Key="CardBrush" Color="#171A20" />
+            <SolidColorBrush x:Key="CardHoverBrush" Color="#1E222A" />
+            <SolidColorBrush x:Key="BorderBrush" Color="#262B34" />
+            <SolidColorBrush x:Key="TextBrush" Color="#F2F3F5" />
+            <SolidColorBrush x:Key="TextSecondaryBrush" Color="#9AA1AD" />
+            <SolidColorBrush x:Key="TextMutedBrush" Color="#6B7280" />
+            <SolidColorBrush x:Key="AccentBrush" Color="#7C6CF6" />
+            <SolidColorBrush x:Key="AccentHoverBrush" Color="#8F82F8" />
+            <SolidColorBrush x:Key="AccentSoftBrush" Color="#2A2650" />
+            <SolidColorBrush x:Key="AccentTextBrush" Color="#C9C2FF" />
+            <SolidColorBrush x:Key="SuccessBrush" Color="#3DD68C" />
+            <SolidColorBrush x:Key="SuccessSoftBrush" Color="#163528" />
+            <SolidColorBrush x:Key="DangerBrush" Color="#F26D6D" />
+
+            <!-- Primary button: glossy pill, lit from the top, darker at the bottom, soft glow underneath. -->
+            <LinearGradientBrush x:Key="PrimaryFill" StartPoint="0%,0%" EndPoint="0%,100%">
+                <GradientStop Color="#9B8FFF" Offset="0" />
+                <GradientStop Color="#7C6CF6" Offset="0.5" />
+                <GradientStop Color="#5E4DE0" Offset="1" />
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="PrimaryFillHover" StartPoint="0%,0%" EndPoint="0%,100%">
+                <GradientStop Color="#ABA0FF" Offset="0" />
+                <GradientStop Color="#8C7DFA" Offset="0.5" />
+                <GradientStop Color="#6C5BEA" Offset="1" />
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="PrimaryFillPressed" StartPoint="0%,0%" EndPoint="0%,100%">
+                <GradientStop Color="#6C5BEA" Offset="0" />
+                <GradientStop Color="#5E4DE0" Offset="1" />
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="PrimaryGloss" StartPoint="0%,0%" EndPoint="0%,100%">
+                <GradientStop Color="#66FFFFFF" Offset="0" />
+                <GradientStop Color="#00FFFFFF" Offset="0.45" />
+            </LinearGradientBrush>
+        </ResourceDictionary>
+    </Styles.Resources>
+
+    <!-- Text -->
+    <Style Selector="TextBlock.title">
+        <Setter Property="FontSize" Value="26" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+    <Style Selector="TextBlock.body">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="LineHeight" Value="22" />
+    </Style>
+    <Style Selector="TextBlock.caption">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="LineHeight" Value="18" />
+    </Style>
+    <Style Selector="TextBlock.label">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+    </Style>
+
+    <!-- Line icons: give a Path the shape, it gets the stroke look. -->
+    <Style Selector="Path.icon">
+        <Setter Property="Width" Value="24" />
+        <Setter Property="Height" Value="24" />
+        <Setter Property="Stretch" Value="None" />
+        <Setter Property="StrokeThickness" Value="1.75" />
+        <Setter Property="StrokeLineCap" Value="Round" />
+        <Setter Property="StrokeJoin" Value="Round" />
+        <Setter Property="Stroke" Value="{StaticResource TextSecondaryBrush}" />
+    </Style>
+
+    <!-- Primary button -->
+    <Style Selector="Button.primary">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Background" Value="{StaticResource PrimaryFill}" />
+        <Setter Property="Padding" Value="28,12" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="Bd" Background="{TemplateBinding Background}" CornerRadius="12"
+                        BorderBrush="#33FFFFFF" BorderThickness="1" BoxShadow="0 4 18 0 #8C7C6CF6">
+                    <Panel>
+                        <Border Name="Gloss" Background="{StaticResource PrimaryGloss}" CornerRadius="11" />
+                        <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}"
+                                          Foreground="{TemplateBinding Foreground}" Margin="{TemplateBinding Padding}"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Panel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="Button.primary:pointerover /template/ Border#Bd">
+        <Setter Property="Background" Value="{StaticResource PrimaryFillHover}" />
+    </Style>
+    <Style Selector="Button.primary:pressed">
+        <Setter Property="RenderTransform" Value="scale(0.98)" />
+    </Style>
+    <Style Selector="Button.primary:pressed /template/ Border#Bd">
+        <Setter Property="Background" Value="{StaticResource PrimaryFillPressed}" />
+    </Style>
+    <Style Selector="Button.primary:pressed /template/ Border#Gloss">
+        <Setter Property="Opacity" Value="0.3" />
+    </Style>
+    <Style Selector="Button.primary:disabled /template/ Border#Bd">
+        <Setter Property="Opacity" Value="0.5" />
+    </Style>
+
+    <!-- Ghost button: outline only -->
+    <Style Selector="Button.ghost">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Padding" Value="28,12" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="10" Padding="{TemplateBinding Padding}">
+                    <ContentPresenter Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="Button.ghost:pointerover /template/ Border#Bd">
+        <Setter Property="Background" Value="{StaticResource CardHoverBrush}" />
+    </Style>
+
+    <!-- Small icon button (settings, back, clear) -->
+    <Style Selector="Button.iconButton">
+        <Setter Property="Width" Value="36" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8">
+                    <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="Button.iconButton:pointerover /template/ Border#Bd">
+        <Setter Property="Background" Value="{StaticResource CardHoverBrush}" />
+    </Style>
+    <Style Selector="Button.iconButton Path">
+        <Setter Property="Stroke" Value="{StaticResource TextSecondaryBrush}" />
+    </Style>
+    <Style Selector="Button.iconButton:pointerover Path">
+        <Setter Property="Stroke" Value="{StaticResource TextBrush}" />
+    </Style>
+
+    <!-- Card -->
+    <Style Selector="Border.card">
+        <Setter Property="Background" Value="{StaticResource CardBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="14" />
+        <Setter Property="Padding" Value="16" />
+    </Style>
+
+    <!-- Search field: the outer border owns the look, the TextBox inside is bare. -->
+    <Style Selector="Border.search">
+        <Setter Property="Background" Value="{StaticResource CardBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Padding" Value="14,0" />
+        <Setter Property="Height" Value="44" />
+    </Style>
+    <Style Selector="Border.search:focus-within">
+        <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+    </Style>
+    <Style Selector="TextBox.bare">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+        <Setter Property="CaretBrush" Value="{StaticResource AccentBrush}" />
+        <Setter Property="SelectionBrush" Value="{StaticResource AccentBrush}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TextBox.bare:pointerover /template/ Border#PART_BorderElement, TextBox.bare:focus /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="TextBox.bare:pointerover, TextBox.bare:focus">
+        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+    </Style>
+</Styles>

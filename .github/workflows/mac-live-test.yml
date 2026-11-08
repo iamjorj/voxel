@@ -21,12 +21,8 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
-      - name: Install VB-CABLE
-        run: |
-          curl -fsSL -o vbcable.zip https://download.vb-audio.com/Download_MAC/VBCable_MACDriver_Pack108.zip
-          unzip -o vbcable.zip -d vbcable
-          hdiutil attach "$(find vbcable -iname '*.dmg' | head -1)" -nobrowse -mountpoint /tmp/vbcable-mount
-          sudo installer -pkg "$(find /tmp/vbcable-mount -iname '*.pkg' | head -1)" -target /
+      - name: Install VB-CABLE with Voxel's own script
+        run: sudo sh VoiceChanger.Mac/install-vbcable.sh Voxel.Mac/Assets/vbcable/VBCable_MACDriver_Pack108.zip
       - name: Install BlackHole (stand-in mic)
         run: brew install --cask blackhole-2ch
       - name: Restart Core Audio

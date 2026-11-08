@@ -49,6 +49,7 @@ static class Program
 
     private static void Run(string output)
     {
+        Log($"Microphone permission: {MacPermissions.Microphone()}");
         Log("Devices:");
         foreach (var d in MacAudioDevices.All())
             Log($"  {d.Name}: {d.InputChannels} in, {d.OutputChannels} out ({d.Uid})");

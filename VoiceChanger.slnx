@@ -4,6 +4,8 @@
   <Project Path="VoiceChanger.EngineTest/VoiceChanger.EngineTest.csproj" />
   <Project Path="VoiceChanger.Mac/VoiceChanger.Mac.csproj" />
   <Project Path="VoiceChanger.Mac.LiveTest/VoiceChanger.Mac.LiveTest.csproj" />
+  <Project Path="Voxel.Mac/Voxel.Mac.csproj" />
+  <Project Path="Voxel.Mac.Screens/Voxel.Mac.Screens.csproj" />
   <Project Path="Voxel/Voxel.csproj" />
   <Project Path="Voxel.Setup/Voxel.Setup.csproj" />
 </Solution>

@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Voxel.Mac.Pages.SetupPage">
+    <StackPanel VerticalAlignment="Center" Margin="40,0,40,44">
+        <TextBlock Classes="title" Text="One thing to install" />
+        <TextBlock Classes="body" Margin="0,8,0,24"
+                   Text="A virtual microphone lets other apps hear your new voice. You only do this once." />
+
+        <Border Classes="card">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Border Name="StatusCircle" Width="40" Height="40" CornerRadius="20" Background="{StaticResource AccentSoftBrush}" VerticalAlignment="Center">
+                    <Viewbox Width="20" Height="20">
+                        <Path Name="StatusIcon" Classes="icon" Stroke="{StaticResource AccentBrush}" StrokeThickness="2" />
+                    </Viewbox>
+                </Border>
+
+                <StackPanel Grid.Column="1" Margin="14,0,12,0" VerticalAlignment="Center">
+                    <TextBlock Classes="label" Text="Virtual microphone" />
+                    <TextBlock Name="StatusText" Classes="caption" Text="Not installed" Margin="0,2,0,0" />
+                </StackPanel>
+
+                <Button Name="ActionButton" Grid.Column="2" Classes="primary" Padding="18,9"
+                        Content="Install" VerticalAlignment="Center" Click="Action_Click" />
+            </Grid>
+        </Border>
+
+        <TextBlock Classes="caption" Margin="0,14,0,0"
+                   Text="Your Mac asks for your password once. Powered by VB-CABLE from VB-Audio (www.vb-cable.com), donationware — all participations are welcome." />
+    </StackPanel>
+</UserControl>

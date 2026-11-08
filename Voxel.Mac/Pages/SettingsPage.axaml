@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Voxel.Mac.Pages.SettingsPage">
+    <Grid Margin="36,8,36,24" RowDefinitions="Auto,Auto,Auto,Auto,*">
+        <StackPanel Orientation="Horizontal">
+            <Button Classes="iconButton" Click="Back_Click" ToolTip.Tip="Back" AutomationProperties.Name="Back" Margin="-8,0,8,0">
+                <Viewbox Width="18" Height="18">
+                    <Path Name="BackIcon" Classes="icon" StrokeThickness="2" />
+                </Viewbox>
+            </Button>
+            <TextBlock Classes="title" Text="Settings" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <!-- Virtual microphone status -->
+        <Border Grid.Row="1" Classes="card" Margin="0,24,0,0" Padding="18,16">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Margin="0,0,20,0">
+                    <TextBlock Classes="label" Text="Virtual microphone" />
+                    <TextBlock Name="CableStatus" Classes="caption" Margin="0,4,0,0" />
+                </StackPanel>
+                <Button Grid.Column="1" Classes="ghost" Padding="16,8" Content="Run setup again"
+                        VerticalAlignment="Center" Click="Setup_Click" />
+            </Grid>
+        </Border>
+
+        <!-- macOS asks before an app may use the mic; a "no" means silence, not an error -->
+        <Border Grid.Row="2" Classes="card" Margin="0,12,0,0" Padding="18,16">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Margin="0,0,20,0">
+                    <TextBlock Classes="label" Text="Microphone access" />
+                    <TextBlock Name="MicStatus" Classes="caption" Margin="0,4,0,0" />
+                </StackPanel>
+                <Button Grid.Column="1" Classes="ghost" Padding="16,8" Content="Open settings"
+                        VerticalAlignment="Center" Click="Privacy_Click" />
+            </Grid>
+        </Border>
+
+        <!-- The one thing macOS can't automate -->
+        <Border Grid.Row="3" Classes="card" Margin="0,12,0,0" Padding="18,16">
+            <StackPanel>
+                <TextBlock Classes="label" Text="An app doesn't hear the voice?" />
+                <TextBlock Classes="caption" Margin="0,4,0,0"
+                           Text="Most apps use your Mac's default microphone, which Voxel switches for you. A few (some websites, some games) remember their own choice: in their microphone list pick “VB-Cable” once, and they'll keep it." />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

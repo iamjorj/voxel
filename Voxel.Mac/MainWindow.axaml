@@ -1,0 +1,31 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:app="clr-namespace:Voxel.Mac"
+        x:Class="Voxel.Mac.MainWindow"
+        Title="Voxel" Width="780" Height="720" CanResize="False"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BgBrush}"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaTitleBarHeightHint="44">
+    <!-- The content runs up under the title bar, like the Windows app; macOS keeps its own
+         close/minimise buttons at the top left, so the title starts after them. -->
+    <Grid RowDefinitions="44,*">
+        <Border Name="TitleBar" Background="Transparent" PointerPressed="TitleBar_PointerPressed">
+            <Grid>
+                <StackPanel Orientation="Horizontal" Margin="84,0,0,0" VerticalAlignment="Center">
+                    <app:LogoMark Width="14" Height="16" Foreground="{StaticResource AccentBrush}" Margin="0,0,8,0" />
+                    <TextBlock Text="Voxel" VerticalAlignment="Center" FontSize="13" FontWeight="SemiBold"
+                               Foreground="{StaticResource TextSecondaryBrush}" />
+                </StackPanel>
+                <Button Name="SettingsButton" Classes="iconButton" HorizontalAlignment="Right" Margin="0,0,10,0"
+                        Click="Settings_Click" ToolTip.Tip="Settings" AutomationProperties.Name="Settings" IsVisible="False">
+                    <Viewbox Width="17" Height="17">
+                        <Path Classes="icon" Name="SettingsIcon" />
+                    </Viewbox>
+                </Button>
+            </Grid>
+        </Border>
+
+        <ContentControl Name="ContentHost" Grid.Row="1" Focusable="False" />
+    </Grid>
+</Window>

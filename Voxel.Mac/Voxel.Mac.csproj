@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Voxel for Mac: the same screens as the Windows app (Voxel/), built with Avalonia because WPF
+       is Windows-only. Talks to VoiceChanger.Mac the way the Windows app talks to VoiceChanger.Core. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>Voxel</AssemblyName>
+    <RootNamespace>Voxel.Mac</RootNamespace>
+    <Version>0.1.2</Version>
+    <Product>Voxel</Product>
+    <Description>Voxel, the free one-click voice changer</Description>
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VoiceChanger.Mac\VoiceChanger.Mac.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Voxel.Mac.Screens" />
+    <!-- One icon set for both apps: read from the Windows app's file at startup. -->
+    <EmbeddedResource Include="..\Voxel\Icons.xaml" LogicalName="Voxel.Icons.xaml" />
+    <None Include="..\Voxel\Assets\ai\**" Link="Assets\ai\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <!-- VB-Audio's own package, unchanged, as their terms ask. -->
+    <None Update="Assets\vbcable\**" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\VoiceChanger.Mac\install-vbcable.sh" Link="Assets\vbcable\install-vbcable.sh" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
