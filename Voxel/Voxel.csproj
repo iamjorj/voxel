@@ -13,7 +13,7 @@
     <AssemblyName>Voxel</AssemblyName>
     <RootNamespace>Voxel</RootNamespace>
     <ApplicationIcon>Assets\voxel.ico</ApplicationIcon>
-    <Version>0.1.2</Version>
+    <Version>0.1.3</Version>
     <Product>Voxel</Product>
     <Description>Free one-click voice changer for Windows</Description>
   </PropertyGroup>

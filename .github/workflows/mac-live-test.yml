@@ -4,7 +4,7 @@ name: Mac live audio test
 
 on:
   push:
-    branches: [mac-engine-test]
+    branches: [main, mac-engine-test]
     paths:
       - VoiceChanger.Mac/**
       - VoiceChanger.Mac.LiveTest/**

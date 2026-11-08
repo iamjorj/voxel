@@ -3,7 +3,7 @@ name: Mac app test
 
 on:
   push:
-    branches: [mac-engine-test]
+    branches: [main, mac-engine-test]
     paths:
       - Voxel.Mac/**
       - Voxel.Mac.Screens/**

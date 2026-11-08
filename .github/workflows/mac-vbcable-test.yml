@@ -3,7 +3,7 @@ name: Mac VB-CABLE test
 
 on:
   push:
-    branches: [mac-engine-test]
+    branches: [main, mac-engine-test]
     paths: [.github/workflows/mac-vbcable-test.yml]
   workflow_dispatch:
 

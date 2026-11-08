@@ -3,7 +3,7 @@ name: Mac engine test
 
 on:
   push:
-    branches: [mac-engine-test]
+    branches: [main, mac-engine-test]
   workflow_dispatch:
 
 jobs:
