@@ -1,0 +1,59 @@
+# Builds the Mac download (.dmg) on GitHub's Mac, installs it the way a user would, and photographs
+# each step: the disk image window, the app running, and what macOS says about a downloaded copy.
+name: Mac dmg
+
+on:
+  push:
+    branches: [mac-engine-test]
+    paths:
+      - Voxel.Mac/**
+      - VoiceChanger.Mac/**
+      - installer/build-mac.sh
+      - installer/Info.plist
+      - .github/workflows/mac-dmg.yml
+  workflow_dispatch:
+
+jobs:
+  dmg:
+    runs-on: macos-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Build the dmg
+        run: sh installer/build-mac.sh
+      - name: Open the disk image like a user
+        run: |
+          mkdir -p shots
+          hdiutil attach artifacts/Voxel-*-mac.dmg -nobrowse -mountpoint /Volumes/Voxel
+          ls -la /Volumes/Voxel
+          open /Volumes/Voxel
+          sleep 4
+          screencapture -x shots/1-disk-image.png || true
+      - name: Install by copying to Applications, then open it
+        run: |
+          cp -R /Volumes/Voxel/Voxel.app /Applications/
+          codesign --verify --deep --strict /Applications/Voxel.app && echo "signature ok"
+          spctl --assess --type execute -vv /Applications/Voxel.app || echo "Gatekeeper: not notarized (expected without a Developer ID)"
+          open /Applications/Voxel.app
+          sleep 12
+          pgrep -x Voxel && echo "Voxel is running"
+          screencapture -x shots/2-running.png || true
+          pkill -x Voxel || true
+      - name: What a downloaded copy shows the first time
+        run: |
+          # A browser marks downloads with a quarantine flag; that's what makes macOS ask.
+          xattr -w com.apple.quarantine "0081;$(printf %x $(date +%s));Safari;" /Applications/Voxel.app
+          open /Applications/Voxel.app || true
+          sleep 6
+          screencapture -x shots/3-first-open-downloaded.png || true
+          pgrep -x Voxel && echo "opened without asking" || echo "macOS blocked it until approved"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mac-dmg
+          path: |
+            artifacts/Voxel-*-mac.dmg
+            shots/

@@ -3,6 +3,12 @@
              x:Class="Voxel.Mac.App"
              Name="Voxel"
              RequestedThemeVariant="Dark">
+    <!-- The Mac menu bar's app menu; without this it offers "About Avalonia". -->
+    <NativeMenu.Menu>
+        <NativeMenu>
+            <NativeMenuItem Header="About Voxel" Click="About_Click" />
+        </NativeMenu>
+    </NativeMenu.Menu>
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="avares://Voxel/Theme.axaml" />

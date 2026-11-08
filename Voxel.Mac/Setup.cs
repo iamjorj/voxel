@@ -23,7 +23,7 @@ public static class Setup
     }
 
     /// <summary>The bundled VB-CABLE package and its install script.</summary>
-    public static string VbCableFolder => Path.Combine(AppContext.BaseDirectory, "Assets", "vbcable");
+    public static string VbCableFolder => Path.Combine(AppPaths.Assets, "vbcable");
 
     // Only a Mac has Core Audio; anywhere else (the screenshot tool) there is simply no cable.
     public static bool IsCableInstalled => OperatingSystem.IsMacOS() && MacAudioDevices.Cable() != null;

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Voxel.app's description for macOS. build-mac.sh fills in @VERSION@. -->
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>Voxel</string>
+    <key>CFBundleDisplayName</key>
+    <string>Voxel</string>
+    <key>CFBundleIdentifier</key>
+    <string>io.github.iamjorj.voxel</string>
+    <key>CFBundleExecutable</key>
+    <string>Voxel</string>
+    <key>CFBundleIconFile</key>
+    <string>voxel.icns</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>@VERSION@</string>
+    <key>CFBundleVersion</key>
+    <string>@VERSION@</string>
+    <!-- .NET 10 runs on macOS 15 and newer. -->
+    <key>LSMinimumSystemVersion</key>
+    <string>15.0</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.utilities</string>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <!-- Shown when macOS asks whether Voxel may use the microphone. -->
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Voxel changes your voice live, so it needs to hear your microphone. Your voice stays on this Mac.</string>
+</dict>
+</plist>
