@@ -43,11 +43,13 @@ jobs:
           screencapture -x shots/2-running.png || true
           pkill -x Voxel || true
       - name: What a downloaded copy shows the first time
+        timeout-minutes: 3
         run: |
-          # A browser marks downloads with a quarantine flag; that's what makes macOS ask.
+          # A browser marks downloads with a quarantine flag; that's what makes macOS ask. The warning
+          # waits for a click, so `open` runs in the background and the step just photographs it.
           xattr -w com.apple.quarantine "0081;$(printf %x $(date +%s));Safari;" /Applications/Voxel.app
-          open /Applications/Voxel.app || true
-          sleep 6
+          open /Applications/Voxel.app > /dev/null 2>&1 &
+          sleep 8
           screencapture -x shots/3-first-open-downloaded.png || true
           pgrep -x Voxel && echo "opened without asking" || echo "macOS blocked it until approved"
       - uses: actions/upload-artifact@v4
